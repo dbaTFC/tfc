@@ -15,5 +15,5 @@ RUN ./mvnw clean package -DskipTests
 
 # Usar el JAR generado en target/
 CMD ["java", "-jar", "target/gestion-proyectos-0.0.1-SNAPSHOT.jar"]
-FROM eclipse-temurin:17-jdk-alpine
+
 
