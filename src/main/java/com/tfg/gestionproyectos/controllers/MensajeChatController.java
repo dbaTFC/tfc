@@ -2,6 +2,7 @@ package com.tfg.gestionproyectos.controllers;
 
 import com.tfg.gestionproyectos.dtos.EventoCalendarioDTO;
 import com.tfg.gestionproyectos.dtos.MensajeChatDTO;
+import com.tfg.gestionproyectos.dtos.TareaDTO;
 import com.tfg.gestionproyectos.models.EventoCalendario;
 import com.tfg.gestionproyectos.models.MensajeChat;
 import com.tfg.gestionproyectos.services.MensajeChatService;
@@ -59,9 +60,10 @@ public class MensajeChatController {
      * Se espera un JSON con el objeto completo (proyecto y miembro incluidos con sus IDs).
      */
     @PostMapping
-    public ResponseEntity<MensajeChat> crearMensaje(@Valid @RequestBody MensajeChat mensajeChat){
+    public ResponseEntity<MensajeChatDTO> crearMensaje(@Valid @RequestBody MensajeChat mensajeChat){
         MensajeChat nuevoMensaje = mensajeChatService.crearMensaje(mensajeChat);
-        return ResponseEntity.status(201).body(nuevoMensaje);
+        MensajeChatDTO mensajeDTO = new MensajeChatDTO(nuevoMensaje);  // Convertimos el nuevo mensaje a DTO
+        return ResponseEntity.status(201).body(mensajeDTO);
     }
 
     /**
