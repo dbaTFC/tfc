@@ -3,6 +3,9 @@ package com.tfg.gestionproyectos.controllers;
 import com.tfg.gestionproyectos.dtos.TareaDTO;
 import com.tfg.gestionproyectos.models.Tarea;
 import com.tfg.gestionproyectos.services.TareaService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +37,7 @@ public class TareaController {
     // Obtener tarea por ID
     @GetMapping("/{idTarea}")
     public ResponseEntity<TareaDTO> obtenerTareaPorId(@PathVariable Long idTarea) {
-        Optional<Tarea> tareaOptional = Optional.of(tareaService.obtenerTareaPorId(idTarea));
+        Optional<Tarea> tareaOptional = Optional.ofNullable(tareaService.obtenerTareaPorId(idTarea));
 
         if (tareaOptional.isPresent()) {
             Tarea tarea = tareaOptional.get();  // Obtener la tarea
@@ -47,7 +50,7 @@ public class TareaController {
 
     // Crear nueva tarea
     @PostMapping
-    public ResponseEntity<TareaDTO> crearTarea(@RequestBody Tarea tarea) {
+    public ResponseEntity<TareaDTO> crearTarea(@Valid @RequestBody Tarea tarea) {
         Tarea nuevaTarea = tareaService.crearTarea(tarea);
         TareaDTO tareaDTO = new TareaDTO(nuevaTarea);  // Convertimos la nueva tarea a DTO
         return ResponseEntity.status(201).body(tareaDTO);  // Retornamos el DTO con el código de estado 201
@@ -55,7 +58,7 @@ public class TareaController {
 
     // Actualizar tarea existente
     @PutMapping("/{idTarea}")
-    public ResponseEntity<TareaDTO> actualizarTarea(@PathVariable Long idTarea, @RequestBody Tarea tareaDetalles) {
+    public ResponseEntity<TareaDTO> actualizarTarea(@PathVariable Long idTarea, @Valid @RequestBody Tarea tareaDetalles) {
         Tarea tareaActualizada = tareaService.actualizarTarea(idTarea, tareaDetalles);
         TareaDTO tareaDTO = new TareaDTO(tareaActualizada);  // Convertimos la tarea actualizada a DTO
         return ResponseEntity.ok(tareaDTO);  // Retornamos el DTO actualizado

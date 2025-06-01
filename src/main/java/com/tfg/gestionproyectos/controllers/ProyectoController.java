@@ -3,6 +3,9 @@ package com.tfg.gestionproyectos.controllers;
 import com.tfg.gestionproyectos.models.Miembro;
 import com.tfg.gestionproyectos.models.Proyecto;
 import com.tfg.gestionproyectos.services.ProyectoService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +49,7 @@ public class ProyectoController {
 
     // Crear un nuevo proyecto
   @PostMapping
-    public ResponseEntity<Proyecto> crearProyecto(@RequestBody Proyecto proyectoDetalles) {
+    public ResponseEntity<Proyecto> crearProyecto(@Valid @RequestBody Proyecto proyectoDetalles) {
         // Crear un Set para almacenar los IDs de los miembros
         Set<Long> miembroIds = new HashSet<>();
         
@@ -65,7 +68,7 @@ public class ProyectoController {
 
     // Actualizar un proyecto
     @PutMapping("/{id}")
-    public ResponseEntity<Proyecto> actualizarProyecto(@PathVariable Long id, @RequestBody Proyecto proyectoDetalles) {
+    public ResponseEntity<Proyecto> actualizarProyecto(@PathVariable Long id, @Valid @RequestBody Proyecto proyectoDetalles) {
         Proyecto proyecto = proyectoService.actualizarProyecto(id, proyectoDetalles);
         return ResponseEntity.ok(proyecto);
     }

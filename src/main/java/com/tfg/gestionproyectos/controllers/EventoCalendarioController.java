@@ -3,6 +3,9 @@ package com.tfg.gestionproyectos.controllers;
 import com.tfg.gestionproyectos.dtos.EventoCalendarioDTO;
 import com.tfg.gestionproyectos.models.EventoCalendario;
 import com.tfg.gestionproyectos.services.EventoCalendarioService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,14 +71,14 @@ public class EventoCalendarioController {
 
     // Crear un nuevo evento
     @PostMapping
-    public ResponseEntity<EventoCalendario> crearEvento(@RequestBody EventoCalendario evento) {
+    public ResponseEntity<EventoCalendario> crearEvento(@Valid @RequestBody EventoCalendario evento) {
         EventoCalendario nuevoEvento = eventoCalendarioService.guardarEvento(evento);
         return new ResponseEntity<>(nuevoEvento, HttpStatus.CREATED); // Evento creado
     }
 
     // Actualizar un evento existente
     @PutMapping("/{idEvento}")
-    public ResponseEntity<EventoCalendario> actualizarEvento(@PathVariable Long idEvento, @RequestBody EventoCalendario eventoDetalles) {
+    public ResponseEntity<EventoCalendario> actualizarEvento(@PathVariable Long idEvento, @Valid @RequestBody EventoCalendario eventoDetalles) {
         try {
             EventoCalendario eventoActualizado = eventoCalendarioService.actualizarEvento(idEvento, eventoDetalles);
             return new ResponseEntity<>(eventoActualizado, HttpStatus.OK);

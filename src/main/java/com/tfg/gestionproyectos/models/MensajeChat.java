@@ -1,6 +1,10 @@
 package com.tfg.gestionproyectos.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.util.Date;
 
 @Entity
@@ -8,22 +12,27 @@ import java.util.Date;
 public class MensajeChat {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // ID autoincremental
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idMensaje;
 
+    @NotNull(message = "El mensaje debe estar vinculado a un proyecto.")
     @ManyToOne
-    @JoinColumn(name = "id_proyecto", nullable = false) // Relación con Proyecto
+    @JoinColumn(name = "id_proyecto", nullable = false)
     private Proyecto proyecto;
 
+    @NotNull(message = "El mensaje debe estar vinculado a un miembro.")
     @ManyToOne
-    @JoinColumn(name = "id_miembro", nullable = false) // Relación con Miembro (autor del mensaje)
+    @JoinColumn(name = "id_miembro", nullable = false)
     private Miembro miembro;
 
-    @Temporal(TemporalType.TIMESTAMP) // Guarda fecha y hora del mensaje
+    @NotNull(message = "La fecha y hora del mensaje son obligatorias.")
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date fechaHora;
 
-    @Column(nullable = false, columnDefinition = "TEXT") // Permitir mensajes largos
+    @NotBlank(message = "El contenido del mensaje no puede estar vacío.")
+    @Size(max = 1000, message = "El contenido del mensaje no puede superar los 1000 caracteres.")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String contenido;
 
     // Constructores

@@ -1,42 +1,54 @@
 package com.tfg.gestionproyectos.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.util.Date;
 
 @Entity
 @Table(name = "tareas")
 public class Tarea {
+
     public enum EstadoTarea {
         PENDIENTE,
         EN_PROGRESO,
         COMPLETADA
     }
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // ID autoincremental
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tarea")
     private Long idTarea;
 
+    @NotBlank(message = "El título de la tarea no puede estar vacío.")
+    @Size(min = 3, max = 100, message = "El título debe tener entre 3 y 100 caracteres.")
     @Column(nullable = false)
     private String titulo;
 
+    @Size(max = 500, message = "La descripción no puede tener más de 500 caracteres.")
     private String descripcion;
 
+    @NotNull(message = "La fecha de inicio de la tarea es obligatoria.")
     @Temporal(TemporalType.DATE)
     private Date fechaInicio;
 
+    @NotNull(message = "La fecha de fin de la tarea es obligatoria.")
     @Temporal(TemporalType.DATE)
     private Date fechaFin;
 
-    @Enumerated(EnumType.STRING) // Almacenar el estado como texto en la base de datos
+    @NotNull(message = "El estado de la tarea es obligatorio.")
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoTarea estado;
 
-    // Relación con Proyecto (Muchas Tareas pertenecen a un Proyecto)
+    @NotNull(message = "La tarea debe estar asociada a un proyecto.")
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
     private Proyecto proyecto;
 
-    // Relación con Miembro (Una Tarea es asignada a un Miembro)
+    // Puede ser null (una tarea puede no estar asignada aún)
     @ManyToOne
     @JoinColumn(name = "id_miembro")
     private Miembro asignadoA;
@@ -47,7 +59,7 @@ public class Tarea {
     public Tarea(String titulo, String descripcion, Date fechaInicio, Date fechaFin, EstadoTarea estado, Proyecto proyecto, Miembro asignadoA) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.fechaInicio= fechaInicio;
+        this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.estado = estado;
         this.proyecto = proyecto;

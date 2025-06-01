@@ -3,6 +3,9 @@ package com.tfg.gestionproyectos.controllers;
 import com.tfg.gestionproyectos.dtos.MiembroDTO;
 import com.tfg.gestionproyectos.models.Miembro;
 import com.tfg.gestionproyectos.services.MiembroService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +35,7 @@ public class MiembroController {
         return ResponseEntity.ok(miembroDTOs);
     }
 
-    // Obtener todos los miembros (incluyendo contraseña)
+    // Obtener todos los miembros (incluyendo contraseña) ELIMINAR O PROTEGER
     @GetMapping("/contraseña")
     public ResponseEntity<List<Miembro>> obtenerTodosLosMiembrosConContraseña() {
         List<Miembro> miembros = miembroService.obtenerTodosLosMiembros();
@@ -55,7 +58,7 @@ public class MiembroController {
 
     // Crear un nuevo miembro (acepta entidad completa)
     @PostMapping
-    public ResponseEntity<Miembro> crearMiembro(@RequestBody Miembro miembro) {
+    public ResponseEntity<Miembro> crearMiembro(@Valid @RequestBody Miembro miembro) {
         Miembro nuevoMiembro = miembroService.crearMiembro(miembro);
         return ResponseEntity.status(201).body(nuevoMiembro);
     }

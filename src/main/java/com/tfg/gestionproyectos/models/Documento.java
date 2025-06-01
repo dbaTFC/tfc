@@ -1,23 +1,30 @@
 package com.tfg.gestionproyectos.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "documentos")
 public class Documento {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // ID autoincremental
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_documento")
     private Long idDocumento;
 
+    @NotBlank(message = "El nombre del archivo no puede estar vacío.")
+    @Size(max = 255, message = "El nombre del archivo no puede tener más de 255 caracteres.")
     @Column(nullable = false)
     private String nombreArchivo;
 
+    @NotBlank(message = "La ruta del archivo no puede estar vacía.")
+    @Size(max = 1024, message = "La ruta del archivo no puede tener más de 1024 caracteres.")
     @Column(nullable = false)
-    private String rutaArchivo; // Ruta donde se almacena el archivo
+    private String rutaArchivo;
 
-    // Relación con Proyecto (Un Proyecto puede tener muchos Documentos)
+    @NotNull(message = "El documento debe estar asociado a un proyecto.")
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
     private Proyecto proyecto;

@@ -2,6 +2,9 @@ package com.tfg.gestionproyectos.controllers;
 
 import com.tfg.gestionproyectos.models.Documento;
 import com.tfg.gestionproyectos.services.DocumentoService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import com.tfg.gestionproyectos.dtos.DocumentoDTO;
@@ -68,18 +71,16 @@ public class DocumentoController {
     }
     
 
-
-
     // Crear un nuevo documento
     @PostMapping
-    public ResponseEntity<Documento> crearDocumento(@RequestBody Documento documento) {
+    public ResponseEntity<Documento> crearDocumento(@Valid @RequestBody Documento documento) {
         Documento nuevoDocumento = documentoService.crearDocumento(documento);
         return ResponseEntity.ok(nuevoDocumento);
     }
 
     // Actualizar un documento existente
     @PutMapping("/{idDocumento}")
-    public ResponseEntity<Documento> actualizarDocumento(@PathVariable Long idDocumento, @RequestBody Documento documentoDetalles) {
+    public ResponseEntity<Documento> actualizarDocumento(@PathVariable Long idDocumento, @Valid @RequestBody Documento documentoDetalles) {
         Documento documentoActualizado = documentoService.actualizarDocumento(idDocumento, documentoDetalles);
         return ResponseEntity.ok(documentoActualizado);
     }

@@ -1,6 +1,9 @@
 package com.tfg.gestionproyectos.dtos;
 
 import com.tfg.gestionproyectos.models.MensajeChat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 
@@ -12,9 +15,18 @@ import java.util.Date;
 public class MensajeChatDTO {
 
     private Long idMensaje;
-    private Long idProyecto;   // Solo mostramos el ID del proyecto
-    private Long idMiembro;    // Solo mostramos el ID del miembro (autor)
+
+    @NotNull(message = "El ID del proyecto es obligatorio.")
+    private Long idProyecto;
+
+    @NotNull(message = "El ID del miembro (autor) es obligatorio.")
+    private Long idMiembro;
+
+    @NotNull(message = "La fecha y hora del mensaje no puede ser nula.")
     private Date fechaHora;
+
+    @NotBlank(message = "El contenido del mensaje no puede estar vacío.")
+    @Size(max = 1000, message = "El contenido no puede superar los 1000 caracteres.")
     private String contenido;
 
     // Constructor que transforma un MensajeChat a su versión DTO

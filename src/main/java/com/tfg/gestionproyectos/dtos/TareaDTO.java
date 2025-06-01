@@ -2,19 +2,37 @@ package com.tfg.gestionproyectos.dtos;
 
 import com.tfg.gestionproyectos.models.Tarea;
 import com.tfg.gestionproyectos.models.Tarea.EstadoTarea;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 
 public class TareaDTO {
 
     private Long idTarea;
+
+    @NotBlank(message = "El título de la tarea no puede estar vacío.")
+    @Size(min = 3, max = 100, message = "El título debe tener entre 3 y 100 caracteres.")
     private String titulo;
+
+    @Size(max = 500, message = "La descripción no puede tener más de 500 caracteres.")
     private String descripcion;
+
+    @NotNull(message = "La fecha de inicio es obligatoria.")
     private Date fechaInicio;
+
+    @NotNull(message = "La fecha de fin es obligatoria.")
     private Date fechaFin;
+
+    @NotNull(message = "El estado de la tarea es obligatorio.")
     private EstadoTarea estado;
-    private Long idProyecto;  // Solo el id del Proyecto
-    private Long idMiembro;   // Solo el id del Miembro asignado
+
+    @NotNull(message = "El ID del proyecto es obligatorio.")
+    private Long idProyecto;
+
+    // Puede ser nulo si la tarea aún no está asignada
+    private Long idMiembro;
 
     // Constructor que recibe una entidad Tarea
     public TareaDTO(Tarea tarea) {
@@ -24,9 +42,9 @@ public class TareaDTO {
         this.fechaInicio = tarea.getFechaInicio();
         this.fechaFin = tarea.getFechaFin();
         this.estado = tarea.getEstado();
-        this.idProyecto = tarea.getProyecto().getIdProyecto();  // Solo incluimos el ID del proyecto
+        this.idProyecto = tarea.getProyecto().getIdProyecto();
         if (tarea.getAsignadoA() != null) {
-            this.idMiembro = tarea.getAsignadoA().getIdMiembro();  // Solo incluimos el ID del miembro asignado
+            this.idMiembro = tarea.getAsignadoA().getIdMiembro();
         }
     }
 

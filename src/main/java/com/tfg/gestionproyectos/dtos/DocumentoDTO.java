@@ -1,6 +1,9 @@
 package com.tfg.gestionproyectos.dtos;
 
 import com.tfg.gestionproyectos.models.Documento;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * DTO (Data Transfer Object) para la entidad Documento.
@@ -10,9 +13,17 @@ import com.tfg.gestionproyectos.models.Documento;
 public class DocumentoDTO {
 
     private Long idDocumento;
+
+    @NotBlank(message = "El nombre del archivo no puede estar vacío.")
+    @Size(max = 255, message = "El nombre del archivo no puede tener más de 255 caracteres.")
     private String nombreArchivo;
+
+    @NotBlank(message = "La ruta del archivo no puede estar vacía.")
+    @Size(max = 1024, message = "La ruta del archivo no puede tener más de 1024 caracteres.")
     private String rutaArchivo;
-    private Long idProyecto; // Solo exponemos el ID del proyecto, no el objeto completo
+
+    @NotNull(message = "El ID del proyecto asociado no puede ser nulo.")
+    private Long idProyecto;
 
     // Constructor que convierte una entidad Documento en su versión DTO
     public DocumentoDTO(Documento documento) {
@@ -55,4 +66,3 @@ public class DocumentoDTO {
         this.idProyecto = idProyecto;
     }
 }
-

@@ -1,6 +1,10 @@
 package com.tfg.gestionproyectos.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.util.Date;
 
 @Entity
@@ -8,18 +12,26 @@ import java.util.Date;
 public class EventoCalendario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // ID autoincremental
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_evento")
     private Long idEvento;
 
-    @Temporal(TemporalType.TIMESTAMP) // Almacena fecha y hora
+    @NotBlank(message = "El título del evento no puede estar vacío.")
+    @Size(max = 100, message = "El título no puede tener más de 100 caracteres.")
+    @Column(name = "titulo")
+    private String titulo;
+
+    @NotNull(message = "La fecha del evento es obligatoria.")
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date fecha;
 
+    @NotBlank(message = "La descripción del evento no puede estar vacía.")
+    @Size(max = 500, message = "La descripción no puede tener más de 500 caracteres.")
     @Column(nullable = false)
     private String descripcion;
 
-    // Relación con Proyecto (Un Proyecto puede tener muchos Eventos)
+    @NotNull(message = "El evento debe estar vinculado a un proyecto.")
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
     private Proyecto proyecto;
@@ -27,7 +39,8 @@ public class EventoCalendario {
     // Constructores
     public EventoCalendario() {}
 
-    public EventoCalendario(Date fecha, String descripcion, Proyecto proyecto) {
+    public EventoCalendario(String titulo, Date fecha, String descripcion, Proyecto proyecto) {
+        this.titulo = titulo;
         this.fecha = fecha;
         this.descripcion = descripcion;
         this.proyecto = proyecto;
@@ -36,6 +49,9 @@ public class EventoCalendario {
     // Getters y Setters
     public Long getIdEvento() { return idEvento; }
     public void setIdEvento(Long id) { this.idEvento = id; }
+
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
 
     public Date getFecha() { return fecha; }
     public void setFecha(Date fecha) { this.fecha = fecha; }

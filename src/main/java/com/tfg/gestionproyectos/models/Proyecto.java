@@ -1,6 +1,10 @@
 package com.tfg.gestionproyectos.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -10,38 +14,38 @@ import java.util.Set;
 public class Proyecto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // ID autoincremental
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_proyecto")
     private Long idProyecto;
 
+    @NotBlank(message = "El nombre del proyecto no puede estar vacío.")
+    @Size(min = 3, max = 100, message = "El nombre del proyecto debe tener entre 3 y 100 caracteres.")
     @Column(nullable = false)
     private String nombre;
 
+    @Size(max = 500, message = "La descripción no puede superar los 500 caracteres.")
     private String descripcion;
 
-    @Temporal(TemporalType.DATE)//se almacenará solo la fecha (sin la hora)
+    @NotNull(message = "La fecha de inicio del proyecto es obligatoria.")
+    @Temporal(TemporalType.DATE)
     private Date fechaInicio;
 
+    @NotNull(message = "La fecha de fin del proyecto es obligatoria.")
     @Temporal(TemporalType.DATE)
     private Date fechaFin;
 
-    // Relación con Tareas (Un Proyecto tiene muchas Tareas)
-    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true) //cuando una entidad hija es desvinculada de su entidad padre, debe eliminarse automáticamente de la base de datos.
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tarea> tareas;
 
-    // Relación con Documentos (Un Proyecto tiene muchos Documentos)
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Documento> documentos;
 
-    // Relación con Eventos del Calendario
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventoCalendario> eventos;
 
-    // Relación con Mensajes del Chat
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MensajeChat> mensajes;
 
-    // Relación Muchos a Muchos con Miembros
     @ManyToMany
     @JoinTable(
         name = "miembro_proyecto",
@@ -50,7 +54,7 @@ public class Proyecto {
     )
     private Set<Miembro> miembros;
 
-    // Constructores (vacío como con parámetros)
+    // Constructores
     public Proyecto() {}
 
     public Proyecto(String nombre, String descripcion, Date fechaInicio, Date fechaFin) {
@@ -76,6 +80,6 @@ public class Proyecto {
     public Date getFechaFin() { return fechaFin; }
     public void setFechaFin(Date fechaFin) { this.fechaFin = fechaFin; }
 
-    public Set<Miembro> getMiembros(){return miembros;}
-    public void setMiembros(Set<Miembro> miembros){this.miembros = miembros;}
+    public Set<Miembro> getMiembros() { return miembros; }
+    public void setMiembros(Set<Miembro> miembros) { this.miembros = miembros; }
 }
