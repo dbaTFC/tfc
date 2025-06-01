@@ -1,6 +1,7 @@
 package com.tfg.gestionproyectos.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,6 +23,7 @@ public class EventoCalendario {
     private String titulo;
 
     @NotNull(message = "La fecha del evento es obligatoria.")
+    @FutureOrPresent(message = "La fecha no puede estar en el pasado.")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date fecha;

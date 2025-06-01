@@ -1,6 +1,7 @@
 package com.tfg.gestionproyectos.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -31,10 +32,12 @@ public class Tarea {
     private String descripcion;
 
     @NotNull(message = "La fecha de inicio de la tarea es obligatoria.")
+    @FutureOrPresent(message = "La fecha de inicio no puede estar en el pasado.")
     @Temporal(TemporalType.DATE)
     private Date fechaInicio;
 
     @NotNull(message = "La fecha de fin de la tarea es obligatoria.")
+    @FutureOrPresent(message = "La fecha de fin no puede estar en el pasado.")
     @Temporal(TemporalType.DATE)
     private Date fechaFin;
 
