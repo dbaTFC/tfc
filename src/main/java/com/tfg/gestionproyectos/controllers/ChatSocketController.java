@@ -22,15 +22,21 @@ public class ChatSocketController {
     /**
      * Endpoint STOMP para recibir mensajes del frontend
      */
+   
     @MessageMapping("/chat.sendMessage")
-    public void recibirMensaje(@Valid MensajeChatDTO chatDTO) {
-        // Guardamos en la BBDD usando el servicio actual
+public void recibirMensaje(@Valid MensajeChatDTO chatDTO) {
+    System.out.println("Mensaje recibido via WebSocket: " + chatDTO.getContenido());
+    try {
         MensajeChat mensaje = mensajeChatService.crearDesdeDTO(chatDTO);
 
-        // Emitimos el mensaje al canal del proyecto
         messagingTemplate.convertAndSend(
-                "/topic/proyecto/" + chatDTO.getIdProyecto(),
-                mensaje  // o convertirlo a DTO si prefieres
+            "/topic/proyecto/" + chatDTO.getIdProyecto(),
+            mensaje
         );
+    } catch (Exception e) {
+        System.err.println("Error procesando mensaje WebSocket: " + e.getMessage());
+        e.printStackTrace();
     }
+}
+
 }
