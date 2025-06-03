@@ -38,6 +38,11 @@ public class MensajeChatDTO {
         this.contenido = mensaje.getContenido();
     }
 
+    // Constructor vacío requerido para deserialización JSON
+    public MensajeChatDTO() {
+    
+    }
+
     // Getters y Setters
     public Long getIdMensaje() { return idMensaje; }
     public void setIdMensaje(Long idMensaje) { this.idMensaje = idMensaje; }

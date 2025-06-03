@@ -24,19 +24,19 @@ public class ChatSocketController {
      */
    
     @MessageMapping("/chat.sendMessage")
-public void recibirMensaje(@Valid MensajeChatDTO chatDTO) {
-    System.out.println("Mensaje recibido via WebSocket: " + chatDTO.getContenido());
-    try {
-        MensajeChat mensaje = mensajeChatService.crearDesdeDTO(chatDTO);
+    public void recibirMensaje(@Valid MensajeChatDTO chatDTO) {
+        System.out.println("Mensaje recibido via WebSocket: " + chatDTO.getContenido());
+        try {
+            MensajeChat mensaje = mensajeChatService.crearDesdeDTO(chatDTO);
 
-        messagingTemplate.convertAndSend(
-            "/topic/proyecto/" + chatDTO.getIdProyecto(),
-            mensaje
-        );
-    } catch (Exception e) {
-        System.err.println("Error procesando mensaje WebSocket: " + e.getMessage());
-        e.printStackTrace();
-    }
+            messagingTemplate.convertAndSend(
+                "/topic/proyecto/" + chatDTO.getIdProyecto(),
+                new MensajeChatDTO(mensaje)
+            );
+        } catch (Exception e) {
+            System.err.println("Error procesando mensaje WebSocket: " + e.getMessage());
+            e.printStackTrace();
+        }
 }
 
 }
