@@ -30,7 +30,9 @@ public class Documento {
     private Proyecto proyecto;
 
     // Constructores
-    public Documento() {}
+    public Documento() {
+        
+    }
 
     public Documento(String nombreArchivo, String rutaArchivo, Proyecto proyecto) {
         this.nombreArchivo = nombreArchivo;

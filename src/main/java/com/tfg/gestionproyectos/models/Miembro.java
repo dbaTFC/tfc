@@ -52,7 +52,9 @@ public class Miembro {
     private List<MensajeChat> mensajesEnviados;
 
     // Constructores
-    public Miembro() {}
+    public Miembro() {
+        
+    }
 
     public Miembro(String nombreUsuario, String correo, String contraseña, RolMiembro rol) {
         this.nombreUsuario = nombreUsuario;

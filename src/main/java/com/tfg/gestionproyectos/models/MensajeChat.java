@@ -36,7 +36,9 @@ public class MensajeChat {
     private String contenido;
 
     // Constructores
-    public MensajeChat() {}
+    public MensajeChat() {
+        
+    }
 
     public MensajeChat(Proyecto proyecto, Miembro miembro, Date fechaHora, String contenido) {
         this.proyecto = proyecto;

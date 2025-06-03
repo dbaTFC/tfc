@@ -52,6 +52,11 @@ public class MiembroDTO {
         }
     }
 
+    //constructor vacío necesario para Swagger
+    public MiembroDTO(){
+        
+    }
+
     // Getters y Setters
     public Long getIdMiembro() { return idMiembro; }
     public void setIdMiembro(Long idMiembro) { this.idMiembro = idMiembro; }

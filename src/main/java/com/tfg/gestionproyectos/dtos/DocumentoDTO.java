@@ -33,6 +33,11 @@ public class DocumentoDTO {
         this.idProyecto = documento.getProyecto().getIdProyecto(); // Obtenemos solo el ID
     }
 
+    //constructor vacío necesario para Swagger
+    public DocumentoDTO(){
+        
+    }
+
     // Getters y Setters
     public Long getIdDocumento() {
         return idDocumento;

@@ -48,6 +48,11 @@ public class TareaDTO {
         }
     }
 
+    //constructor vacío necesario para Swagger
+    public TareaDTO(){
+        
+    }
+
     // Getters y Setters
     public Long getIdTarea() { return idTarea; }
     public void setIdTarea(Long idTarea) { this.idTarea = idTarea; }

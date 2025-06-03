@@ -38,6 +38,11 @@ public class EventoCalendarioDTO {
         this.idProyecto = evento.getProyecto().getIdProyecto();
     }
 
+    //constructor vacío necesario para Swagger
+    public EventoCalendarioDTO(){
+        
+    }
+
     // Getters y Setters
     public Long getIdEvento() {
         return idEvento;

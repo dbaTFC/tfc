@@ -41,7 +41,7 @@ public class MensajeChatDTO {
          this.nombreUsuario = mensaje.getMiembro().getNombreUsuario();
     }
 
-    // Constructor vacío requerido para deserialización JSON
+    // Constructor vacío requerido para deserialización JSON y Swagger
     public MensajeChatDTO() {
     
     }

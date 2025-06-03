@@ -57,7 +57,9 @@ public class Tarea {
     private Miembro asignadoA;
 
     // Constructores
-    public Tarea() {}
+    public Tarea() {
+        
+    }
 
     public Tarea(String titulo, String descripcion, Date fechaInicio, Date fechaFin, EstadoTarea estado, Proyecto proyecto, Miembro asignadoA) {
         this.titulo = titulo;

@@ -39,7 +39,9 @@ public class EventoCalendario {
     private Proyecto proyecto;
 
     // Constructores
-    public EventoCalendario() {}
+    public EventoCalendario() {
+        
+    }
 
     public EventoCalendario(String titulo, Date fecha, String descripcion, Proyecto proyecto) {
         this.titulo = titulo;

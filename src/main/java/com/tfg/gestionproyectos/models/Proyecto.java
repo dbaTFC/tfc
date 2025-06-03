@@ -55,7 +55,9 @@ public class Proyecto {
     private Set<Miembro> miembros;
 
     // Constructores
-    public Proyecto() {}
+    public Proyecto() {
+        
+    }
 
     public Proyecto(String nombre, String descripcion, Date fechaInicio, Date fechaFin) {
         this.nombre = nombre;
