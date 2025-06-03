@@ -26,7 +26,8 @@
         const idProyecto = document.getElementById("proyectoId").value;
         stompClient.subscribe(`/topic/proyecto/${idProyecto}`, (mensaje) => {
           const cuerpo = JSON.parse(mensaje.body);
-          mostrarMensaje(`[${new Date(cuerpo.fechaHora).toLocaleTimeString()}] Miembro ${cuerpo.miembro.idMiembro}: ${cuerpo.contenido}`);
+            mostrarMensaje(`[${new Date(cuerpo.fechaHora).toLocaleTimeString()}]  ${cuerpo.nombreUsuario}: ${cuerpo.contenido}`);
+
         });
 
         mostrarMensaje("✅ Conectado al chat del proyecto " + idProyecto);
