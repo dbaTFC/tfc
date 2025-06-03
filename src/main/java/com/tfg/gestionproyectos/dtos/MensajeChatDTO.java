@@ -25,6 +25,10 @@ public class MensajeChatDTO {
     @NotNull(message = "La fecha y hora del mensaje no puede ser nula.")
     private Date fechaHora;
 
+    @NotBlank(message = "El nombre de usuario no puede estar vacío.")
+    @Size(min = 3, max = 50, message = "El nombre de usuario debe tener entre 3 y 50 caracteres.")
+    private String nombreUsuario;
+
     @NotBlank(message = "El contenido del mensaje no puede estar vacío.")
     @Size(max = 1000, message = "El contenido no puede superar los 1000 caracteres.")
     private String contenido;
@@ -36,6 +40,7 @@ public class MensajeChatDTO {
         this.idMiembro = mensaje.getMiembro().getIdMiembro();
         this.fechaHora = mensaje.getFechaHora();
         this.contenido = mensaje.getContenido();
+         this.nombreUsuario = mensaje.getMiembro().getNombreUsuario();
     }
 
     // Constructor vacío requerido para deserialización JSON
@@ -58,4 +63,7 @@ public class MensajeChatDTO {
 
     public String getContenido() { return contenido; }
     public void setContenido(String contenido) { this.contenido = contenido; }
+
+    public String getNombreUsuario() { return nombreUsuario; }
+    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
 }
