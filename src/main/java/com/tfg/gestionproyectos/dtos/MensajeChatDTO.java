@@ -25,8 +25,6 @@ public class MensajeChatDTO {
     @NotNull(message = "La fecha y hora del mensaje no puede ser nula.")
     private Date fechaHora;
 
-    @NotBlank(message = "El nombre de usuario no puede estar vacío.")
-    @Size(min = 3, max = 50, message = "El nombre de usuario debe tener entre 3 y 50 caracteres.")
     private String nombreUsuario;
 
     @NotBlank(message = "El contenido del mensaje no puede estar vacío.")
