@@ -45,11 +45,15 @@ public class SecurityConfig {
                     "/miembros/**",
                     "/documentos/**",
                     "/eventos/**",
-                    "/mensajes/**"
+                    "/mensajes/**",
+                     "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html"
                 ).permitAll()
-                .anyRequest().permitAll() // Permitir el resto también (temporal)
+                .anyRequest().authenticated() // Permitir el resto también (temporal)
             )
-            .formLogin(form -> form.disable()); // Desactiva el login por formulario
+            .csrf(csrf -> csrf.disable());
+            //.formLogin(form -> form.disable()); // Desactiva el login por formulario
 
         return http.build();
     }
