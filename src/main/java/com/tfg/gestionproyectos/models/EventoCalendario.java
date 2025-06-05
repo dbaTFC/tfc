@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "eventos_calendario")
@@ -38,7 +37,6 @@ public class EventoCalendario {
     @NotNull(message = "El evento debe estar vinculado a un proyecto.")
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
-    @JsonBackReference
     private Proyecto proyecto;
 
     // Constructores

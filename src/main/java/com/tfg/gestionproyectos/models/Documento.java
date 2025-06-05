@@ -1,6 +1,5 @@
 package com.tfg.gestionproyectos.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -29,7 +28,6 @@ public class Documento {
     @NotNull(message = "El documento debe estar asociado a un proyecto.")
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
-    @JsonBackReference
     private Proyecto proyecto;
 
     // Constructores

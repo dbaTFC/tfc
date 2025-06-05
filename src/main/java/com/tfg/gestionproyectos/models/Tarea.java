@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "tareas")
@@ -51,13 +50,11 @@ public class Tarea {
     @NotNull(message = "La tarea debe estar asociada a un proyecto.")
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
-    @JsonBackReference
     private Proyecto proyecto;
 
     // Puede ser null (una tarea puede no estar asignada aún)
     @ManyToOne
     @JoinColumn(name = "id_miembro")
-    @JsonBackReference
     private Miembro asignadoA;
 
     // Constructores

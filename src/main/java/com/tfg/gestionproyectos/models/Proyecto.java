@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "proyectos")
@@ -37,19 +36,15 @@ public class Proyecto {
     private Date fechaFin;
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Tarea> tareas;
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Documento> documentos;
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<EventoCalendario> eventos;
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<MensajeChat> mensajes;
 
     @ManyToMany
@@ -58,7 +53,6 @@ public class Proyecto {
         joinColumns = @JoinColumn(name = "id_proyecto"),
         inverseJoinColumns = @JoinColumn(name = "id_miembro")
     )
-    @JsonManagedReference
     private Set<Miembro> miembros;
 
     // Constructores

@@ -7,8 +7,6 @@ import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 @Entity
 @Table(name = "mensajes_chat")
 public class MensajeChat {
@@ -20,13 +18,11 @@ public class MensajeChat {
     @NotNull(message = "El mensaje debe estar vinculado a un proyecto.")
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
-    @JsonBackReference
     private Proyecto proyecto;
 
     @NotNull(message = "El mensaje debe estar vinculado a un miembro.")
     @ManyToOne
     @JoinColumn(name = "id_miembro", nullable = false)
-    @JsonBackReference
     private Miembro miembro;
 
     @NotNull(message = "La fecha y hora del mensaje son obligatorias.")

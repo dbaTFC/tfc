@@ -9,8 +9,6 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "miembros")
@@ -46,15 +44,12 @@ public class Miembro {
     private RolMiembro rol;
 
     @ManyToMany(mappedBy = "miembros")
-    @JsonBackReference
     private Set<Proyecto> proyectos;
 
     @OneToMany(mappedBy = "asignadoA", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Tarea> tareasAsignadas;
 
     @OneToMany(mappedBy = "miembro", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<MensajeChat> mensajesEnviados;
 
     // Constructores
