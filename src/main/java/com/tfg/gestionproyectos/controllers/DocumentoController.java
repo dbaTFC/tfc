@@ -73,16 +73,18 @@ public class DocumentoController {
 
     // Crear un nuevo documento
     @PostMapping
-    public ResponseEntity<Documento> crearDocumento(@Valid @RequestBody Documento documento) {
+    public ResponseEntity<DocumentoDTO> crearDocumento(@Valid @RequestBody Documento documento) {
         Documento nuevoDocumento = documentoService.crearDocumento(documento);
-        return ResponseEntity.ok(nuevoDocumento);
+        DocumentoDTO documentoDTO = new DocumentoDTO(nuevoDocumento);
+        return ResponseEntity.ok(documentoDTO);
     }
 
     // Actualizar un documento existente
     @PutMapping("/{idDocumento}")
-    public ResponseEntity<Documento> actualizarDocumento(@PathVariable Long idDocumento, @Valid @RequestBody Documento documentoDetalles) {
+    public ResponseEntity<DocumentoDTO> actualizarDocumento(@PathVariable Long idDocumento, @Valid @RequestBody Documento documentoDetalles) {
         Documento documentoActualizado = documentoService.actualizarDocumento(idDocumento, documentoDetalles);
-        return ResponseEntity.ok(documentoActualizado);
+        DocumentoDTO documentoDTOa = new DocumentoDTO(documentoActualizado);
+        return ResponseEntity.ok(documentoDTOa);
     }
 
     // Eliminar documento por ID

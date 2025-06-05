@@ -1,9 +1,6 @@
 package com.tfg.gestionproyectos.controllers;
 
-import com.tfg.gestionproyectos.dtos.EventoCalendarioDTO;
 import com.tfg.gestionproyectos.dtos.MensajeChatDTO;
-import com.tfg.gestionproyectos.dtos.TareaDTO;
-import com.tfg.gestionproyectos.models.EventoCalendario;
 import com.tfg.gestionproyectos.models.MensajeChat;
 import com.tfg.gestionproyectos.services.MensajeChatService;
 

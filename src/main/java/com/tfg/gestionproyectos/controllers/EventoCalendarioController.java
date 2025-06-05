@@ -71,17 +71,19 @@ public class EventoCalendarioController {
 
     // Crear un nuevo evento
     @PostMapping
-    public ResponseEntity<EventoCalendario> crearEvento(@Valid @RequestBody EventoCalendario evento) {
+    public ResponseEntity<EventoCalendarioDTO> crearEvento(@Valid @RequestBody EventoCalendario evento) {
         EventoCalendario nuevoEvento = eventoCalendarioService.guardarEvento(evento);
-        return new ResponseEntity<>(nuevoEvento, HttpStatus.CREATED); // Evento creado
+        EventoCalendarioDTO eventoDTO = new EventoCalendarioDTO(nuevoEvento);
+        return new ResponseEntity<>(eventoDTO, HttpStatus.CREATED); // Evento creado
     }
 
     // Actualizar un evento existente
     @PutMapping("/{idEvento}")
-    public ResponseEntity<EventoCalendario> actualizarEvento(@PathVariable Long idEvento, @Valid @RequestBody EventoCalendario eventoDetalles) {
+    public ResponseEntity<EventoCalendarioDTO> actualizarEvento(@PathVariable Long idEvento, @Valid @RequestBody EventoCalendario eventoDetalles) {
         try {
             EventoCalendario eventoActualizado = eventoCalendarioService.actualizarEvento(idEvento, eventoDetalles);
-            return new ResponseEntity<>(eventoActualizado, HttpStatus.OK);
+             EventoCalendarioDTO eventoDTOa = new EventoCalendarioDTO(eventoActualizado);
+            return new ResponseEntity<>(eventoDTOa, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Evento no encontrado
         }
