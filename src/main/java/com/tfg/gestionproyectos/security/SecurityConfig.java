@@ -35,26 +35,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Desactivar CSRF (importante para H2 y pruebas sin frontend)
-            .headers(headers -> headers.frameOptions(frame -> frame.disable())) // Permitir cargar H2 en iframe
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/h2-console/**",
-                    "/proyectos/**",
-                    "/tareas/**",
-                    "/miembros/**",
-                    "/documentos/**",
-                    "/eventos/**",
-                    "/mensajes/**",
-                     "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html"
-                ).permitAll()
-                .anyRequest().authenticated() // Permitir el resto también (temporal)
-            )
-            .csrf(csrf -> csrf.disable());
-            //.formLogin(form -> form.disable()); // Desactiva el login por formulario
-
+    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    .csrf(csrf -> csrf.disable())
+    .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+    .authorizeHttpRequests(auth -> auth
+        .requestMatchers(
+            "/h2-console/**",
+            "/proyectos/**",
+            "/tareas/**",
+            "/miembros/**",
+            "/documentos/**",
+            "/eventos/**",
+            "/mensajes/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
+        ).permitAll()
+        .anyRequest().authenticated()
+    );
         return http.build();
     }
 
