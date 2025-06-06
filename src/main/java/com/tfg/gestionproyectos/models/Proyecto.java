@@ -85,4 +85,37 @@ public class Proyecto {
 
     public Set<Miembro> getMiembros() { return miembros; }
     public void setMiembros(Set<Miembro> miembros) { this.miembros = miembros; }
+
+     public List<Tarea> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(List<Tarea> tareas) {
+        this.tareas = tareas;
+    }
+
+    public List<Documento> getDocumentos() {
+        return documentos;
+    }
+
+    public void setDocumentos(List<Documento> documentos) {
+        this.documentos = documentos;
+    }
+
+    public List<EventoCalendario> getEventos() {
+        return eventos;
+    }
+
+    public void setEventos(List<EventoCalendario> eventos) {
+        this.eventos = eventos;
+    }
+
+    
+    public List<MensajeChat> getMensajes() {
+        return mensajes;
+    }
+
+    public void setMensajes(List<MensajeChat> mensajes) {
+        this.mensajes = mensajes;
+    }
 }
