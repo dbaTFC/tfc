@@ -1,5 +1,6 @@
 package com.tfg.gestionproyectos.controllers;
 
+import com.tfg.gestionproyectos.dtos.ProyectoDTO;
 import com.tfg.gestionproyectos.models.Miembro;
 import com.tfg.gestionproyectos.models.Proyecto;
 import com.tfg.gestionproyectos.services.ProyectoService;
@@ -49,7 +50,7 @@ public class ProyectoController {
 
     // Crear un nuevo proyecto
   @PostMapping
-    public ResponseEntity<Proyecto> crearProyecto(@Valid @RequestBody Proyecto proyectoDetalles) {
+    public ResponseEntity<ProyectoDTO> crearProyecto(@Valid @RequestBody Proyecto proyectoDetalles) {
         // Crear un Set para almacenar los IDs de los miembros
         Set<Long> miembroIds = new HashSet<>();
         
@@ -60,17 +61,20 @@ public class ProyectoController {
 
         // Crear el proyecto con los miembros asignados
         Proyecto proyectoCreado = proyectoService.crearProyectoConMiembros(proyectoDetalles, miembroIds);
-        
+        //lo transformamos a DTO para mostrarlo
+        ProyectoDTO proyectoDTO = new ProyectoDTO(proyectoCreado);
         // Retornar el proyecto creado con el código HTTP 201 (CREADO)
-        return ResponseEntity.status(HttpStatus.CREATED).body(proyectoCreado);
+        return ResponseEntity.status(HttpStatus.CREATED).body(proyectoDTO);
     }
 
 
     // Actualizar un proyecto
     @PutMapping("/{id}")
-    public ResponseEntity<Proyecto> actualizarProyecto(@PathVariable Long id, @Valid @RequestBody Proyecto proyectoDetalles) {
+    public ResponseEntity<ProyectoDTO> actualizarProyecto(@PathVariable Long id, @Valid @RequestBody Proyecto proyectoDetalles) {
         Proyecto proyecto = proyectoService.actualizarProyecto(id, proyectoDetalles);
-        return ResponseEntity.ok(proyecto);
+        //lo transformamos a DTO para mostrarlo
+        ProyectoDTO proyectoDTOa = new ProyectoDTO(proyecto);
+        return ResponseEntity.ok(proyectoDTOa);
     }
 
     // Eliminar un proyecto
