@@ -47,6 +47,7 @@ public class Proyecto {
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MensajeChat> mensajes;
 
+    @NotNull(message = "No puede haber un proyecto sin miembros")
     @ManyToMany
     @JoinTable(
         name = "miembro_proyecto",

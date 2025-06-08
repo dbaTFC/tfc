@@ -85,6 +85,7 @@ public EventoCalendario actualizarEvento(Long idEvento, EventoCalendario eventoD
         EventoCalendario evento = eventoOptional.get();
         
         // Actualizamos los detalles del evento con los nuevos datos
+        evento.setTitulo(eventoDetalles.getTitulo());
         evento.setDescripcion(eventoDetalles.getDescripcion());
         evento.setFecha(eventoDetalles.getFecha());
         
