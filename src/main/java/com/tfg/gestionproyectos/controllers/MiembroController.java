@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ public class MiembroController {
 
     @Autowired
     private ProyectoService proyectoService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Obtener todos los miembros
     @GetMapping
@@ -68,6 +72,8 @@ public class MiembroController {
     // Crear un nuevo miembro
     @PostMapping
     public ResponseEntity<MiembroDTO> crearMiembro(@Valid @RequestBody Miembro miembro) {
+        //codificamos la contraseña antes de guardar
+        miembro.setContraseña(passwordEncoder.encode(miembro.getContraseña()));
         Miembro nuevoMiembro = miembroService.crearMiembro(miembro);
         MiembroDTO miembroDTO = new MiembroDTO(nuevoMiembro); // Convertimos el nuev miembro a DTO
         return ResponseEntity.status(201).body(miembroDTO); // Retornamos el DTO con el código de estado 201
