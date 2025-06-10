@@ -68,7 +68,8 @@ public class SecurityConfig {
                 "/swagger-ui.html",
                 "/login"
             ).permitAll()
-            .requestMatchers(HttpMethod.POST, "/miembros").permitAll()
+            .requestMatchers(HttpMethod.POST, "/miembros/").permitAll()
+                .requestMatchers(HttpMethod.GET, "/miembros/**").permitAll() // TEMPORAL
             // Toddos los endpoints requieren autenticación, pero no se limita por rol global
             .anyRequest().authenticated()
 )
