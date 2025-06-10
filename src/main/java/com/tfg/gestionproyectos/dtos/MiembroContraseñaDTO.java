@@ -30,7 +30,7 @@ public class MiembroContraseñaDTO {
     @NotNull(message = "La lista de mensajes enviados no puede ser nula.")
     private List<Long> mensajesEnviados;
 
-    private List<MiembroProyectoDTO> proyectos = new ArrayList<>();
+    private List<Long> proyectos = new ArrayList<>();
 
     private String contraseña;
 
@@ -57,7 +57,7 @@ public class MiembroContraseñaDTO {
         this.proyectos = new ArrayList<>();
         if (miembro.getProyectosMiembro() != null) {
             for (MiembroProyecto mp : miembro.getProyectosMiembro()) {
-                this.proyectos.add(new MiembroProyectoDTO(mp));
+                this.proyectos.add(mp.getProyecto().getIdProyecto());
             }
         }
 
@@ -79,11 +79,11 @@ public class MiembroContraseñaDTO {
     public String getCorreo() { return correo; }
     public void setCorreo(String correo) { this.correo = correo; }
 
-    public List<MiembroProyectoDTO> getProyectos() {
+    public List<Long> getProyectos() {
         return proyectos;
     }
 
-    public void setProyectos(List<MiembroProyectoDTO> proyectos) {
+    public void setProyectos(List<Long> proyectos) {
         this.proyectos = proyectos;
     }
 
