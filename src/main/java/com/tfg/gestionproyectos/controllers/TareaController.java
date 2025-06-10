@@ -2,12 +2,16 @@ package com.tfg.gestionproyectos.controllers;
 
 import com.tfg.gestionproyectos.dtos.TareaDTO;
 import com.tfg.gestionproyectos.models.Tarea;
+import com.tfg.gestionproyectos.services.ProyectoService;
 import com.tfg.gestionproyectos.services.TareaService;
 
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -20,6 +24,9 @@ public class TareaController {
 
     @Autowired
     private TareaService tareaService;
+
+     @Autowired
+    private ProyectoService proyectoService;
 
     // Obtener todas las tareas
     @GetMapping
@@ -66,7 +73,16 @@ public class TareaController {
 
     // Eliminar tarea por ID
     @DeleteMapping("/{idTarea}")
-    public ResponseEntity<Void> eliminarTarea(@PathVariable Long idTarea) {
+    public ResponseEntity<Void> eliminarTarea(@PathVariable Long idTarea,  @AuthenticationPrincipal UserDetails userDetails) {
+
+        Long solicitanteId = proyectoService.getMiembroIdByUsername(userDetails.getUsername());
+
+        Tarea tareaElim = tareaService.obtenerTareaPorId(idTarea);
+
+        if (!proyectoService.esAdministradorDelProyecto(solicitanteId, tareaElim.getProyecto().getIdProyecto())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         tareaService.eliminarTarea(idTarea);
         return ResponseEntity.noContent().build();  // Retorna un No Content (204)
     }

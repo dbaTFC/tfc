@@ -19,34 +19,49 @@ public class MiembroService {
         return miembroRepository.findAll();
     }
 
-   // Obtener un miembro por ID
+    // Obtener un miembro por ID
     public Miembro obtenerMiembroPorId(Long id) {
-        // Buscar el miembro por su ID en el repositorio
         Optional<Miembro> miembroOptional = miembroRepository.findById(id);
-
-        // Verificar si el miembro fue encontrado
         if (miembroOptional.isPresent()) {
-            return miembroOptional.get(); // Devolver el miembro encontrado
+            return miembroOptional.get();
         } else {
-            // Si no se encuentra, lanzar una excepción
             throw new RuntimeException("Miembro no encontrado");
         }
     }
 
+    // Obtener miembro por nombre de usuario
+    public Miembro obtenerPorNombreUsuario(String nombreUsuario) {
+        Miembro miembro = miembroRepository.findByNombreUsuario(nombreUsuario);
+        if (miembro == null) {
+            throw new RuntimeException("Usuario no encontrado: " + nombreUsuario);
+        }
+        return miembro;
+    }
+
+    // Obtener ID de miembro por nombre de usuario
+    public Long obtenerIdPorNombreUsuario(String nombreUsuario) {
+        Miembro miembro = obtenerPorNombreUsuario(nombreUsuario);
+        return miembro.getIdMiembro();
+    }
 
     // Crear un nuevo miembro
     public Miembro crearMiembro(Miembro miembro) {
         return miembroRepository.save(miembro);
     }
 
-    // Actualizar un miembro
+    // Actualizar un miembro (sin tocar el rol, porque ahora va por proyecto)
     public Miembro actualizarMiembro(Long id, Miembro miembroDetalles) {
-        Miembro miembro = miembroRepository.findById(id).orElseThrow(() -> new RuntimeException("Miembro no encontrado"));
-        miembro.setNombreUsuario(miembroDetalles.getNombreUsuario());
-        miembro.setCorreo(miembroDetalles.getCorreo());
-        miembro.setContraseña(miembroDetalles.getContraseña());
-        miembro.setRol(miembroDetalles.getRol());
-        return miembroRepository.save(miembro);
+        Optional<Miembro> miembroOptional = miembroRepository.findById(id);
+        if (miembroOptional.isPresent()) {
+            Miembro miembro = miembroOptional.get();
+            miembro.setNombreUsuario(miembroDetalles.getNombreUsuario());
+            miembro.setCorreo(miembroDetalles.getCorreo());
+            miembro.setContraseña(miembroDetalles.getContraseña());
+
+            return miembroRepository.save(miembro);
+        } else {
+            throw new RuntimeException("Miembro no encontrado");
+        }
     }
 
     // Eliminar un miembro

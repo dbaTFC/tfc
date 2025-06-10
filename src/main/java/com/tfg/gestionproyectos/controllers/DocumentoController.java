@@ -2,11 +2,16 @@ package com.tfg.gestionproyectos.controllers;
 
 import com.tfg.gestionproyectos.models.Documento;
 import com.tfg.gestionproyectos.services.DocumentoService;
+import com.tfg.gestionproyectos.services.ProyectoService;
 
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.tfg.gestionproyectos.dtos.DocumentoDTO;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +25,9 @@ public class DocumentoController {
 
     @Autowired
     private DocumentoService documentoService;
+
+    @Autowired
+    private ProyectoService proyectoService;
 
     // Obtener todos los documentos
   @GetMapping
@@ -89,7 +97,15 @@ public class DocumentoController {
 
     // Eliminar documento por ID
     @DeleteMapping("/{idDocumento}")
-    public ResponseEntity<Void> eliminarDocumento(@PathVariable Long idDocumento) {
+    public ResponseEntity<Void> eliminarDocumento(@PathVariable Long idDocumento, @AuthenticationPrincipal UserDetails userDetails) {
+        Long solicitanteId = proyectoService.getMiembroIdByUsername(userDetails.getUsername());
+
+        Documento docElim = documentoService.obtenerDocumentoPorId(idDocumento);
+
+        if (!proyectoService.esAdministradorDelProyecto(solicitanteId, docElim.getProyecto().getIdProyecto())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         documentoService.eliminarDocumento(idDocumento);
         return ResponseEntity.noContent().build();
     }

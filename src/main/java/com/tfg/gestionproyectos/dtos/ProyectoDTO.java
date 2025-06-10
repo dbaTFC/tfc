@@ -4,9 +4,8 @@ import com.tfg.gestionproyectos.models.*;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 public class ProyectoDTO {
 
@@ -20,48 +19,52 @@ public class ProyectoDTO {
     private List<Long> idDocumentos = new ArrayList<>();
     private List<Long> idEventos = new ArrayList<>();
     private List<Long> idMensajes = new ArrayList<>();
-    private Set<Long> idMiembros = new HashSet<>();
+    private List<MiembroProyectoDTO> miembros = new ArrayList<>();
 
     public ProyectoDTO() {}
 
-    public ProyectoDTO(Proyecto proyecto) {
+      public ProyectoDTO(Proyecto proyecto) {
         this.idProyecto = proyecto.getIdProyecto();
         this.nombre = proyecto.getNombre();
         this.descripcion = proyecto.getDescripcion();
         this.fechaInicio = proyecto.getFechaInicio();
         this.fechaFin = proyecto.getFechaFin();
 
+        // Tareas - for tradicional
         if (proyecto.getTareas() != null) {
             for (Tarea tarea : proyecto.getTareas()) {
                 this.idTareas.add(tarea.getIdTarea());
             }
         }
 
+        // Documentos - for tradicional
         if (proyecto.getDocumentos() != null) {
             for (Documento doc : proyecto.getDocumentos()) {
                 this.idDocumentos.add(doc.getIdDocumento());
             }
         }
 
+        // Eventos - for tradicional
         if (proyecto.getEventos() != null) {
             for (EventoCalendario evento : proyecto.getEventos()) {
                 this.idEventos.add(evento.getIdEvento());
             }
         }
 
+        // Mensajes - for tradicional
         if (proyecto.getMensajes() != null) {
             for (MensajeChat mensaje : proyecto.getMensajes()) {
                 this.idMensajes.add(mensaje.getIdMensaje());
             }
         }
 
-        if (proyecto.getMiembros() != null) {
-            for (Miembro miembro : proyecto.getMiembros()) {
-                this.idMiembros.add(miembro.getIdMiembro());
+        // Miembros - for tradicional
+        if (proyecto.getMiembrosProyecto() != null) {
+            for (MiembroProyecto mp : proyecto.getMiembrosProyecto()) {
+                this.miembros.add(new MiembroProyectoDTO(mp));
             }
         }
     }
-
     // Getters y Setters
 
     public Long getIdProyecto() {
@@ -136,11 +139,11 @@ public class ProyectoDTO {
         this.idMensajes = idMensajes;
     }
 
-    public Set<Long> getIdMiembros() {
-        return idMiembros;
+    public List<MiembroProyectoDTO> getMiembros() {
+        return miembros;
     }
 
-    public void setIdMiembros(Set<Long> idMiembros) {
-        this.idMiembros = idMiembros;
+    public void setMiembros(List<MiembroProyectoDTO> miembros) {
+        this.miembros = miembros;
     }
 }

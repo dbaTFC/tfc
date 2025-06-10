@@ -1,19 +1,23 @@
 package com.tfg.gestionproyectos.controllers;
 
 import com.tfg.gestionproyectos.dtos.MiembroDTO;
-import com.tfg.gestionproyectos.dtos.TareaDTO;
 import com.tfg.gestionproyectos.models.Miembro;
-import com.tfg.gestionproyectos.models.Tarea;
+import com.tfg.gestionproyectos.models.MiembroProyecto;
 import com.tfg.gestionproyectos.services.MiembroService;
+import com.tfg.gestionproyectos.services.ProyectoService;
 
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -23,7 +27,10 @@ public class MiembroController {
     @Autowired
     private MiembroService miembroService;
 
-    // Obtener todos los miembros (versión DTO)
+    @Autowired
+    private ProyectoService proyectoService;
+
+    // Obtener todos los miembros
     @GetMapping
     public ResponseEntity<List<MiembroDTO>> obtenerTodosLosMiembros() {
         List<Miembro> miembros = miembroService.obtenerTodosLosMiembros();
@@ -47,7 +54,7 @@ public class MiembroController {
     }
 
 
-    // Obtener miembro por ID (versión DTO)
+    // Obtener miembro por ID
     @GetMapping("/{idMiembro}")
     public ResponseEntity<MiembroDTO> obtenerMiembroPorId(@PathVariable Long idMiembro) {
         // Buscar el miembro por su ID utilizando el servicio
@@ -58,7 +65,7 @@ public class MiembroController {
         return ResponseEntity.ok(dto);
     }
 
-    // Crear un nuevo miembro (acepta entidad completa)
+    // Crear un nuevo miembro
     @PostMapping
     public ResponseEntity<MiembroDTO> crearMiembro(@Valid @RequestBody Miembro miembro) {
         Miembro nuevoMiembro = miembroService.crearMiembro(miembro);
@@ -66,7 +73,7 @@ public class MiembroController {
         return ResponseEntity.status(201).body(miembroDTO); // Retornamos el DTO con el código de estado 201
     }
 
-    // Actualizar un miembro existente (acepta entidad completa)
+    // Actualizar un miembro existente
     @PutMapping("/{idMiembro}")
     public ResponseEntity<MiembroDTO> actualizarMiembro(
             @PathVariable Long idMiembro,
@@ -79,7 +86,29 @@ public class MiembroController {
 
     // Eliminar miembro por ID
     @DeleteMapping("/{idMiembro}")
-    public ResponseEntity<Void> eliminarMiembro(@PathVariable Long idMiembro) {
+     public ResponseEntity<Void> eliminarMiembro(
+            @PathVariable Long idMiembro,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Long solicitanteId = proyectoService.getMiembroIdByUsername(userDetails.getUsername());
+
+        // 1. Obtener los proyectos del miembro a eliminar
+        Miembro miembroElim = miembroService.obtenerMiembroPorId(idMiembro);
+        Set<MiembroProyecto> relaciones = miembroElim.getProyectosMiembro();
+
+        boolean esAdminEnAlgunProyecto = false;
+
+        for (MiembroProyecto mp : relaciones) {
+            if (proyectoService.esAdministradorDelProyecto(solicitanteId, mp.getProyecto().getIdProyecto())) {
+                esAdminEnAlgunProyecto = true;
+                break;
+            }
+        }
+
+        if (!esAdminEnAlgunProyecto) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         miembroService.eliminarMiembro(idMiembro);
         return ResponseEntity.noContent().build();
     }

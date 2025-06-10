@@ -44,17 +44,13 @@ public class Proyecto {
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventoCalendario> eventos;
 
+    @NotNull(message = "No puede haber un proyecto sin miembros")
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MensajeChat> mensajes;
 
-    @NotNull(message = "No puede haber un proyecto sin miembros")
-    @ManyToMany
-    @JoinTable(
-        name = "miembro_proyecto",
-        joinColumns = @JoinColumn(name = "id_proyecto"),
-        inverseJoinColumns = @JoinColumn(name = "id_miembro")
-    )
-    private Set<Miembro> miembros;
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MiembroProyecto> miembrosProyecto;
+
 
     // Constructores
     public Proyecto() {
@@ -84,8 +80,12 @@ public class Proyecto {
     public Date getFechaFin() { return fechaFin; }
     public void setFechaFin(Date fechaFin) { this.fechaFin = fechaFin; }
 
-    public Set<Miembro> getMiembros() { return miembros; }
-    public void setMiembros(Set<Miembro> miembros) { this.miembros = miembros; }
+    public Set<MiembroProyecto> getMiembrosProyecto() {
+        return miembrosProyecto;
+    }
+    public void setMiembrosProyecto(Set<MiembroProyecto> miembrosProyecto) {
+        this.miembrosProyecto = miembrosProyecto;
+    }
 
      public List<Tarea> getTareas() {
         return tareas;

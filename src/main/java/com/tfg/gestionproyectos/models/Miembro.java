@@ -3,7 +3,6 @@ package com.tfg.gestionproyectos.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
@@ -13,11 +12,6 @@ import java.util.Set;
 @Entity
 @Table(name = "miembros")
 public class Miembro {
-
-    public enum RolMiembro {
-        ADMINISTRADOR,
-        MIEMBRO
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,12 +33,8 @@ public class Miembro {
     @Column(nullable = false)
     private String contraseña;
 
-    @NotNull(message = "El rol del miembro es obligatorio.")
-    @Enumerated(EnumType.STRING)
-    private RolMiembro rol;
-
-    @ManyToMany(mappedBy = "miembros")
-    private Set<Proyecto> proyectos;
+    @OneToMany(mappedBy = "miembro", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MiembroProyecto> proyectosMiembro;
 
     @OneToMany(mappedBy = "asignadoA", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tarea> tareasAsignadas;
@@ -57,11 +47,11 @@ public class Miembro {
 
     }
 
-    public Miembro(String nombreUsuario, String correo, String contraseña, RolMiembro rol) {
+    public Miembro(String nombreUsuario, String correo, String contraseña ) {
         this.nombreUsuario = nombreUsuario;
         this.correo = correo;
         this.contraseña = contraseña;
-        this.rol = rol;
+     
     }
 
     // Getters y Setters
@@ -77,9 +67,13 @@ public class Miembro {
     public String getContraseña() { return contraseña; }
     public void setContraseña(String contraseña) { this.contraseña = contraseña; }
 
-    public RolMiembro getRol() { return rol; }
-    public void setRol(RolMiembro rol) { this.rol = rol; }
+       public Set<MiembroProyecto> getProyectosMiembro() {
+        return proyectosMiembro;
+    }
 
+    public void setProyectosMiembro(Set<MiembroProyecto> proyectosMiembro) {
+        this.proyectosMiembro = proyectosMiembro;
+    }
     public List<Tarea> getTareasAsignadas() { return tareasAsignadas; }
     public void setTareasAsignadas(List<Tarea> tareasAsignadas) { this.tareasAsignadas = tareasAsignadas; }
 

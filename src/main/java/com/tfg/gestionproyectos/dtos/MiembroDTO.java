@@ -2,7 +2,7 @@ package com.tfg.gestionproyectos.dtos;
 
 import com.tfg.gestionproyectos.models.MensajeChat;
 import com.tfg.gestionproyectos.models.Miembro;
-import com.tfg.gestionproyectos.models.Miembro.RolMiembro;
+import com.tfg.gestionproyectos.models.MiembroProyecto;
 import com.tfg.gestionproyectos.models.Tarea;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,31 +24,39 @@ public class MiembroDTO {
     @Email(message = "Debe proporcionar un correo electrónico válido.")
     private String correo;
 
-    @NotNull(message = "El rol del miembro es obligatorio.")
-    private RolMiembro rol;
-
     @NotNull(message = "La lista de tareas asignadas no puede ser nula.")
     private List<Long> tareasAsignadas;
 
     @NotNull(message = "La lista de mensajes enviados no puede ser nula.")
     private List<Long> mensajesEnviados;
 
+    private List<MiembroProyectoDTO> proyectos = new ArrayList<>();
+
     // Constructor que recibe una entidad Miembro
     public MiembroDTO(Miembro miembro) {
         this.idMiembro = miembro.getIdMiembro();
         this.nombreUsuario = miembro.getNombreUsuario();
         this.correo = miembro.getCorreo();
-        this.rol = miembro.getRol();
 
         this.tareasAsignadas = new ArrayList<>();
-        this.mensajesEnviados = new ArrayList<>();
-
-        for (Tarea tarea : miembro.getTareasAsignadas()) {
-            this.tareasAsignadas.add(tarea.getIdTarea());
+        if (miembro.getTareasAsignadas() != null) {
+            for (Tarea tarea : miembro.getTareasAsignadas()) {
+                this.tareasAsignadas.add(tarea.getIdTarea());
+            }
         }
 
-        for (MensajeChat mensaje : miembro.getMensajesEnviados()) {
-            this.mensajesEnviados.add(mensaje.getIdMensaje());
+        this.mensajesEnviados = new ArrayList<>();
+        if (miembro.getMensajesEnviados() != null) {
+            for (MensajeChat mensaje : miembro.getMensajesEnviados()) {
+                this.mensajesEnviados.add(mensaje.getIdMensaje());
+            }
+        }
+
+        this.proyectos = new ArrayList<>();
+        if (miembro.getProyectosMiembro() != null) {
+            for (MiembroProyecto mp : miembro.getProyectosMiembro()) {
+                this.proyectos.add(new MiembroProyectoDTO(mp));
+            }
         }
     }
 
@@ -67,8 +75,13 @@ public class MiembroDTO {
     public String getCorreo() { return correo; }
     public void setCorreo(String correo) { this.correo = correo; }
 
-    public RolMiembro getRol() { return rol; }
-    public void setRol(RolMiembro rol) { this.rol = rol; }
+    public List<MiembroProyectoDTO> getProyectos() {
+        return proyectos;
+    }
+
+    public void setProyectos(List<MiembroProyectoDTO> proyectos) {
+        this.proyectos = proyectos;
+    }
 
     public List<Long> getTareasAsignadas() { return tareasAsignadas; }
     public void setTareasAsignadas(List<Long> tareasAsignadas) { this.tareasAsignadas = tareasAsignadas; }

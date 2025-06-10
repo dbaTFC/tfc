@@ -3,12 +3,15 @@ package com.tfg.gestionproyectos.controllers;
 import com.tfg.gestionproyectos.dtos.EventoCalendarioDTO;
 import com.tfg.gestionproyectos.models.EventoCalendario;
 import com.tfg.gestionproyectos.services.EventoCalendarioService;
+import com.tfg.gestionproyectos.services.ProyectoService;
 
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -20,6 +23,9 @@ public class EventoCalendarioController {
 
     @Autowired
     private EventoCalendarioService eventoCalendarioService;
+
+    @Autowired
+    private ProyectoService proyectoService;
 
     /**
      * Obtener todos los eventos (como DTOs)
@@ -91,7 +97,15 @@ public class EventoCalendarioController {
 
     // Eliminar un evento
     @DeleteMapping("/{idEvento}")
-    public ResponseEntity<Void> eliminarEvento(@PathVariable Long idEvento) {
+    public ResponseEntity<Void> eliminarEvento(@PathVariable Long idEvento, @AuthenticationPrincipal UserDetails userDetails) {
+        Long solicitanteId = proyectoService.getMiembroIdByUsername(userDetails.getUsername());
+
+        EventoCalendario eventoElim = eventoCalendarioService.obtenerEventoPorId(idEvento);
+
+        if (!proyectoService.esAdministradorDelProyecto(solicitanteId, eventoElim.getProyecto().getIdProyecto())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         eventoCalendarioService.eliminarEvento(idEvento);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Evento eliminado
     }

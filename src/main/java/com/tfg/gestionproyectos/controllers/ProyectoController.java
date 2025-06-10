@@ -1,24 +1,21 @@
 package com.tfg.gestionproyectos.controllers;
 
 import com.tfg.gestionproyectos.dtos.ProyectoDTO;
-import com.tfg.gestionproyectos.dtos.TareaDTO;
-import com.tfg.gestionproyectos.models.Miembro;
+import com.tfg.gestionproyectos.models.MiembroProyecto;
 import com.tfg.gestionproyectos.models.Proyecto;
-import com.tfg.gestionproyectos.models.Tarea;
 import com.tfg.gestionproyectos.services.ProyectoService;
+
 
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/proyectos")
@@ -31,66 +28,72 @@ public class ProyectoController {
     @GetMapping
     public ResponseEntity<List<ProyectoDTO>> obtenerTodosLosProyectos() {
         List<Proyecto> proyectos = proyectoService.obtenerTodosLosProyectos();
-
         List<ProyectoDTO> proyectosDTOs = new ArrayList<>();
 
         for (Proyecto proyecto : proyectos) {
-            proyectosDTOs.add(new ProyectoDTO(proyecto));  // Convertimos cada Proyecto a ProyectoDTO
+            proyectosDTOs.add(new ProyectoDTO(proyecto));
         }
 
-        return ResponseEntity.ok(proyectosDTOs);// Devolvemos la lista de DTOs
+        return ResponseEntity.ok(proyectosDTOs);
     }
 
     // Obtener un proyecto por ID
     @GetMapping("/{id}")
     public ResponseEntity<ProyectoDTO> obtenerProyectoPorId(@PathVariable Long id) {
-        // Buscar el proyecto por su ID utilizando el servicio
         Optional<Proyecto> proyectoOptional = proyectoService.obtenerProyectoPorId(id);
 
-        // Verificar si el proyecto existe
         if (proyectoOptional.isPresent()) {
-            Proyecto proyecto = proyectoOptional.get(); // Obtener el proyecto
-            ProyectoDTO proyectoDTO = new ProyectoDTO(proyecto); //lo convertimos a DTO
-            return ResponseEntity.ok(proyectoDTO);         // Devolverlo como respuesta JSON
+            Proyecto proyecto = proyectoOptional.get();
+            return ResponseEntity.ok(new ProyectoDTO(proyecto));
         } else {
-            // Si no se encuentra, devolver 404 Not Found
             return ResponseEntity.notFound().build();
         }
     }
 
-
     // Crear un nuevo proyecto
-  @PostMapping
-    public ResponseEntity<ProyectoDTO> crearProyecto(@Valid @RequestBody Proyecto proyectoDetalles) {
-        // Crear un Set para almacenar los IDs de los miembros
+    @PostMapping
+    public ResponseEntity<ProyectoDTO> crearProyecto(
+            @Valid @RequestBody Proyecto proyectoDetalles,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
         Set<Long> miembroIds = new HashSet<>();
-        
-        // Recorrer la lista de miembros del proyecto y agregar sus IDs al Set
-        for (Miembro miembro : proyectoDetalles.getMiembros()) {
-            miembroIds.add(miembro.getIdMiembro());
+        for (MiembroProyecto miembroP : proyectoDetalles.getMiembrosProyecto()) {
+            miembroIds.add(miembroP.getMiembro().getIdMiembro());
         }
 
-        // Crear el proyecto con los miembros asignados
-        Proyecto proyectoCreado = proyectoService.crearProyectoConMiembros(proyectoDetalles, miembroIds);
-        //lo transformamos a DTO para mostrarlo
-        ProyectoDTO proyectoDTO = new ProyectoDTO(proyectoCreado);
-        // Retornar el proyecto creado con el código HTTP 201 (CREADO)
-        return ResponseEntity.status(HttpStatus.CREATED).body(proyectoDTO);
-    }
+        Long creadorId = obtenerIdMiembroDesdeUsername(userDetails.getUsername());
 
+        Proyecto proyectoCreado = proyectoService.crearProyectoConMiembros(proyectoDetalles, miembroIds, creadorId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ProyectoDTO(proyectoCreado));
+    }
 
     // Actualizar un proyecto
     @PutMapping("/{id}")
-    public ResponseEntity<ProyectoDTO> actualizarProyecto(@PathVariable Long id, @Valid @RequestBody Proyecto proyectoDetalles) {
+    public ResponseEntity<ProyectoDTO> actualizarProyecto(
+            @PathVariable Long id,
+            @Valid @RequestBody Proyecto proyectoDetalles,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Long solicitanteId = obtenerIdMiembroDesdeUsername(userDetails.getUsername());
+        if (!proyectoService.esAdministradorDelProyecto(solicitanteId, id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Proyecto proyecto = proyectoService.actualizarProyecto(id, proyectoDetalles);
-        //lo transformamos a DTO para mostrarlo
-        ProyectoDTO proyectoDTOa = new ProyectoDTO(proyecto);
-        return ResponseEntity.ok(proyectoDTOa);
+        return ResponseEntity.ok(new ProyectoDTO(proyecto));
     }
 
     // Eliminar un proyecto
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarProyecto(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarProyecto(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Long solicitanteId = obtenerIdMiembroDesdeUsername(userDetails.getUsername());
+        if (!proyectoService.esAdministradorDelProyecto(solicitanteId, id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         proyectoService.eliminarProyecto(id);
         return ResponseEntity.noContent().build();
     }
@@ -98,10 +101,21 @@ public class ProyectoController {
     // Eliminar a un miembro de un proyecto
     @DeleteMapping("/{proyectoId}/miembros/{miembroId}")
     public ResponseEntity<Proyecto> eliminarMiembroDeProyecto(
-        @PathVariable Long proyectoId, @PathVariable Long miembroId) {
-        
+            @PathVariable Long proyectoId,
+            @PathVariable Long miembroId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Long solicitanteId = obtenerIdMiembroDesdeUsername(userDetails.getUsername());
+        if (!proyectoService.esAdministradorDelProyecto(solicitanteId, proyectoId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Proyecto proyectoActualizado = proyectoService.eliminarMiembroDeProyecto(proyectoId, miembroId);
-        return ResponseEntity.ok(proyectoActualizado);  // Devuelve el proyecto actualizado
+        return ResponseEntity.ok(proyectoActualizado);
     }
 
+    // Método auxiliar para convertir username en ID de miembro
+    private Long obtenerIdMiembroDesdeUsername(String username) {
+        return proyectoService.getMiembroIdByUsername(username);
+    }
 }

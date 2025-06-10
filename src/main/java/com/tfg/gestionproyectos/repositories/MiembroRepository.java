@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MiembroRepository extends JpaRepository<Miembro, Long> {
     Miembro findByNombreUsuario(String nombreUsuario); // Método para buscar un usuario por su nombre
+    boolean existsByNombreUsuario(String nombreUsuario); //Método para comprobar si un nombre de usuario ya existe
 }
