@@ -51,17 +51,18 @@ public class MiembroController {
 
     // Obtener todos los miembros (incluyendo contraseña) ELIMINAR O PROTEGER
     @GetMapping("/contraseña")
-    public ResponseEntity<List<Miembro>> obtenerTodosLosMiembrosConContraseña() {
+    public ResponseEntity<List<MiembroContraseñaDTO
+    >> obtenerTodosLosMiembrosConContraseña() {
         List<Miembro> miembros = miembroService.obtenerTodosLosMiembros();
         //los convertimos a DTOs
-        List<MiembroContraseñaDTO> miembroContraseñaDTOs = new ArrayList<>();;
+        List<MiembroContraseñaDTO> miembrosContraseñaDTOs = new ArrayList<>();;
 
         for (Miembro miembro : miembros) {
-                miembroContraseñaDTOs.add(new MiembroContraseñaDTO(miembro));
+                miembrosContraseñaDTOs.add(new MiembroContraseñaDTO(miembro));
         }
 
         // Retornamos la lista de miembros con todas sus propiedades, incluyendo la contraseña
-        return ResponseEntity.ok(miembros);
+        return ResponseEntity.ok(miembrosContraseñaDTOs);
     }
 
 
