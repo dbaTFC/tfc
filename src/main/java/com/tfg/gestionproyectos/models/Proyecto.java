@@ -44,7 +44,6 @@ public class Proyecto {
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventoCalendario> eventos;
 
-    @NotNull(message = "No puede haber un proyecto sin miembros")
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MensajeChat> mensajes;
 
