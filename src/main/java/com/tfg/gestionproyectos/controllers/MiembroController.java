@@ -1,5 +1,6 @@
 package com.tfg.gestionproyectos.controllers;
 
+import com.tfg.gestionproyectos.dtos.MiembroContraseñaDTO;
 import com.tfg.gestionproyectos.dtos.MiembroDTO;
 import com.tfg.gestionproyectos.models.Miembro;
 import com.tfg.gestionproyectos.models.MiembroProyecto;
@@ -53,10 +54,10 @@ public class MiembroController {
     public ResponseEntity<List<Miembro>> obtenerTodosLosMiembrosConContraseña() {
         List<Miembro> miembros = miembroService.obtenerTodosLosMiembros();
         //los convertimos a DTOs
-        List<MiembroDTO> miembroDTOs = new ArrayList<>();;
+        List<MiembroContraseñaDTO> miembroContraseñaDTOs = new ArrayList<>();;
 
         for (Miembro miembro : miembros) {
-                miembroDTOs.add(new MiembroDTO(miembro));
+                miembroContraseñaDTOs.add(new MiembroContraseñaDTO(miembro));
         }
 
         // Retornamos la lista de miembros con todas sus propiedades, incluyendo la contraseña
