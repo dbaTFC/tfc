@@ -52,6 +52,12 @@ public class MiembroController {
     @GetMapping("/contraseña")
     public ResponseEntity<List<Miembro>> obtenerTodosLosMiembrosConContraseña() {
         List<Miembro> miembros = miembroService.obtenerTodosLosMiembros();
+        //los convertimos a DTOs
+        List<MiembroDTO> miembroDTOs = new ArrayList<>();;
+
+        for (Miembro miembro : miembros) {
+                miembroDTOs.add(new MiembroDTO(miembro));
+        }
 
         // Retornamos la lista de miembros con todas sus propiedades, incluyendo la contraseña
         return ResponseEntity.ok(miembros);
