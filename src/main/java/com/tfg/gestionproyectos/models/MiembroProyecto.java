@@ -32,9 +32,9 @@ public class MiembroProyecto {
     private RolProyecto rol;
 
     
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false, updatable = false)
-    private Date fechaIncorporacion = new Date();
+    // @Temporal(TemporalType.TIMESTAMP)
+    // @Column(nullable = false, updatable = false)
+    // private Date fechaIncorporacion = new Date();
 
     // Constructores
     public MiembroProyecto() {}
@@ -74,7 +74,7 @@ public class MiembroProyecto {
         this.rol = rol;
     }
 
-    public Date getFechaIncorporacion() {
-        return fechaIncorporacion;
-    }
+    // public Date getFechaIncorporacion() {
+    //     return fechaIncorporacion;
+    // }
 }

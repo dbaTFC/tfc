@@ -20,7 +20,7 @@ public class MiembroProyectoDTO {
         this.idMiembro = miembroProyecto.getMiembro().getIdMiembro();
         this.idProyecto = miembroProyecto.getProyecto().getIdProyecto();
         this.rol = miembroProyecto.getRol().name();
-        this.fechaIncorporacion = miembroProyecto.getFechaIncorporacion();
+        // this.fechaIncorporacion = miembroProyecto.getFechaIncorporacion();
         
         // Opcional: incluir nombres para facilitar el frontend
         this.nombreProyecto = miembroProyecto.getProyecto().getNombre();
