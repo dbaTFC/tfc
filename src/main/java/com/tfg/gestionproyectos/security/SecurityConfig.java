@@ -44,16 +44,15 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
 
-        // Solo se permite Angular en local
-        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        corsConfig.setExposedHeaders(Arrays.asList("Authorization")); // Exponemos el token si fuera necesario
-        corsConfig.setAllowCredentials(false); // No se usan cookies ni credenciales en JWT
-        corsConfig.setMaxAge(3600L); // Cache de preflight por 1h
-
+        corsConfig.setAllowedOrigins(Arrays.asList("*")); // Permite cualquier origen
+        corsConfig.setAllowedMethods(Arrays.asList("*")); // Permite todos los métodos HTTP (GET, POST, etc.)
+        corsConfig.setAllowedHeaders(Arrays.asList("*")); // Permite todos los headers
+        corsConfig.setExposedHeaders(Arrays.asList("*")); // Expone todos los headers al cliente
+        corsConfig.setAllowCredentials(false);            // No permite enviar cookies ni credenciales
+        corsConfig.setMaxAge(3600L);                       // Tiempo que se cachea la configuración CORS
+       
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
+        source.registerCorsConfiguration("/**", corsConfig); // Aplica la configuración a todas las rutas
         return source;
     }
 
