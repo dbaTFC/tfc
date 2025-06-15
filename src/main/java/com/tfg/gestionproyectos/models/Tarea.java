@@ -33,7 +33,6 @@ public class Tarea {
     private String descripcion;
 
     @NotNull(message = "La fecha de inicio de la tarea es obligatoria.")
-    @FutureOrPresent(message = "La fecha de inicio no puede estar en el pasado.")
     @Temporal(TemporalType.DATE)
     private Date fechaInicio;
 
