@@ -30,7 +30,6 @@ public class EventoCalendario {
 
     // Fecha y hora del evento, obligatoria y debe ser igual o posterior a la fecha actual
     @NotNull(message = "La fecha del evento es obligatoria.")
-    @FutureOrPresent(message = "La fecha no puede estar en el pasado.")
     @Temporal(TemporalType.TIMESTAMP) // Para indicar que es fecha y hora
     @Column(nullable = false)
     private Date fecha;
