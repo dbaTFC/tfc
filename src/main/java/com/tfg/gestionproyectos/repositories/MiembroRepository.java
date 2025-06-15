@@ -6,6 +6,20 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MiembroRepository extends JpaRepository<Miembro, Long> {
-    Miembro findByNombreUsuario(String nombreUsuario); // Método para buscar un usuario por su nombre
-    boolean existsByNombreUsuario(String nombreUsuario); //Método para comprobar si un nombre de usuario ya existe
+
+    /**
+     * Busca un miembro por su nombre de usuario.
+     *
+     * @param nombreUsuario el nombre de usuario a buscar
+     * @return el miembro con el nombre de usuario especificado, o null si no existe
+     */
+    Miembro findByNombreUsuario(String nombreUsuario);
+
+    /**
+     * Comprueba si existe un miembro con el nombre de usuario dado.
+     *
+     * @param nombreUsuario el nombre de usuario a verificar
+     * @return true si existe un miembro con ese nombre, false en caso contrario
+     */
+    boolean existsByNombreUsuario(String nombreUsuario);
 }

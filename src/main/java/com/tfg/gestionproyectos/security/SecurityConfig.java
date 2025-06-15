@@ -22,79 +22,93 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.tfg.gestionproyectos.services.MiembroDetailsService;
 
-@Configuration
-@EnableWebSecurity
+/**
+ * Configuración principal de seguridad para la aplicación.
+ * Define filtros, reglas de acceso, autenticación y manejo de CORS.
+ */
+@Configuration // Marca esta clase como configuración Spring
+@EnableWebSecurity // Habilita la configuración de seguridad web
 public class SecurityConfig {
 
     @Autowired
-    private MiembroDetailsService miembroDetailsService;
+    private MiembroDetailsService miembroDetailsService; // Servicio personalizado para cargar datos de usuario
 
     @Autowired
-    private JwtAuthorizationFilter jwtAuthenticationFilter;
+    private JwtAuthorizationFilter jwtAuthenticationFilter; // Filtro que valida el JWT en cada request
 
     /**
-     * CORS Config (permite acceso cruzado para desarrollo)
+     * Configuración CORS para permitir peticiones desde distintos orígenes.
+     * En desarrollo se suele permitir todo, pero en producción hay que restringir.
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(Arrays.asList("*"));
-        corsConfig.setAllowedMethods(Arrays.asList("*"));
-        corsConfig.setAllowedHeaders(Arrays.asList("*"));
-        corsConfig.setExposedHeaders(Arrays.asList("*"));
-        corsConfig.setAllowCredentials(false);
-        corsConfig.setMaxAge(3600L);
+
+        corsConfig.setAllowedOrigins(Arrays.asList("*")); // Permite cualquier origen
+        corsConfig.setAllowedMethods(Arrays.asList("*")); // Permite todos los métodos HTTP (GET, POST, etc.)
+        corsConfig.setAllowedHeaders(Arrays.asList("*")); // Permite todos los headers
+        corsConfig.setExposedHeaders(Arrays.asList("*")); // Expone todos los headers al cliente
+        corsConfig.setAllowCredentials(false);            // No permite enviar cookies ni credenciales
+        corsConfig.setMaxAge(3600L);                       // Tiempo que se cachea la configuración CORS
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
+        source.registerCorsConfiguration("/**", corsConfig); // Aplica la configuración a todas las rutas
         return source;
     }
 
     /**
-     * Seguridad principal
+     * Configura la cadena de filtros de seguridad para peticiones HTTP.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .headers(headers -> headers.frameOptions(frame -> frame.disable())) // Para H2 console
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-           .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/h2-console/**",
-                "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html",
-                "/login"
-            ).permitAll()
-            .requestMatchers(HttpMethod.POST, "/miembros/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/miembros/**").permitAll() // TEMPORAL
-            // Toddos los endpoints requieren autenticación, pero no se limita por rol global
-            .anyRequest().authenticated()
-)
-
-
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Aplica la configuración CORS
+            .csrf(csrf -> csrf.disable()) // Deshabilita protección CSRF (se suele hacer en APIs REST)
+            .headers(headers -> headers.frameOptions(frame -> frame.disable())) // Permite uso de consola H2 embebida
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No se mantiene sesión (JWT)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/h2-console/**",       // Consola H2 accesible sin autenticación
+                    "/v3/api-docs/**",      // Documentación Swagger accesible sin autenticación
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/login"                // Endpoint login público para autenticarse
+                ).permitAll()
+                .requestMatchers(HttpMethod.POST, "/miembros/**").permitAll() // Permite crear usuarios sin autenticarse
+                .requestMatchers(HttpMethod.GET, "/miembros/**").permitAll()  // TEMPORAL: permite listar miembros sin login
+                .anyRequest().authenticated() // Resto de endpoints requieren autenticación
+            )
+            // Añade el filtro para validar JWT antes del filtro de autenticación por usuario/contraseña
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 
     /**
-     * Autenticación personalizada (con UserDetailsService)
+     * Proveedor de autenticación que usa el servicio de usuario personalizado y codifica la contraseña.
      */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+        // Indica cómo cargar usuario y cómo verificar la contraseña
         authProvider.setUserDetailsService(miembroDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
+
         return authProvider;
     }
 
+    /**
+     * Provee el AuthenticationManager, que procesa las solicitudes de autenticación.
+     * Se usa principalmente para el login.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * Bean que provee el encoder de contraseñas usando BCrypt (hash seguro).
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

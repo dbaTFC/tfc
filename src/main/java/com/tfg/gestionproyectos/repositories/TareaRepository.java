@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
+    // Repositorio para la entidad Tarea que extiende JpaRepository
+    // Proporciona operaciones CRUD básicas para las tareas
 }

@@ -21,109 +21,152 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-
+// Definición del controlador REST para manejar solicitudes HTTP relacionadas con miembros
 @RestController
+// Prefijo común para todas las rutas en este controlador
 @RequestMapping("/miembros")
 public class MiembroController {
 
+    // Inyección automática del servicio que maneja la lógica de miembros
     @Autowired
     private MiembroService miembroService;
 
+    // Inyección automática del servicio que maneja la lógica de proyectos
     @Autowired
     private ProyectoService proyectoService;
 
+    // Inyección del encoder para codificar contraseñas
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Obtener todos los miembros
+    /**
+     * Obtener todos los miembros (sin incluir la contraseña)
+     * @return lista de miembros convertidos a DTO para no exponer datos sensibles
+     */
     @GetMapping
     public ResponseEntity<List<MiembroDTO>> obtenerTodosLosMiembros() {
+        // Obtener todos los miembros desde el servicio
         List<Miembro> miembros = miembroService.obtenerTodosLosMiembros();
 
-        // Convertimos a DTOs para no exponer información sensible como contraseñas
-        List<MiembroDTO> miembroDTOs = new ArrayList<>();
+        // Convertir cada miembro a su DTO correspondiente
+        List<MiembroDTO> dtos = new ArrayList<>();
         for (Miembro miembro : miembros) {
-            miembroDTOs.add(new MiembroDTO(miembro));
+            dtos.add(new MiembroDTO(miembro));
         }
 
-        return ResponseEntity.ok(miembroDTOs);
+        // Devolver la lista de DTOs con código HTTP 200 OK
+        return ResponseEntity.ok(dtos);
     }
 
-    // Obtener todos los miembros (incluyendo contraseña) ELIMINAR O PROTEGER
+    /**
+     * Obtener todos los miembros incluyendo sus contraseñas
+     * IMPORTANTE: Este endpoint debe protegerse o eliminarse en producción
+     * @return lista de miembros con todas sus propiedades, incluida la contraseña
+     */
     @GetMapping("/contraseña")
-    public ResponseEntity<List<MiembroContraseñaDTO
-    >> obtenerTodosLosMiembrosConContraseña() {
+    public ResponseEntity<List<MiembroContraseñaDTO>> obtenerTodosLosMiembrosConContraseña() {
+        // Obtener todos los miembros
         List<Miembro> miembros = miembroService.obtenerTodosLosMiembros();
-        //los convertimos a DTOs
-        List<MiembroContraseñaDTO> miembrosContraseñaDTOs = new ArrayList<>();;
 
+        // Convertir cada miembro a DTO que incluye la contraseña
+        List<MiembroContraseñaDTO> dtos = new ArrayList<>();
         for (Miembro miembro : miembros) {
-                miembrosContraseñaDTOs.add(new MiembroContraseñaDTO(miembro));
+            dtos.add(new MiembroContraseñaDTO(miembro));
         }
 
-        // Retornamos la lista de miembros con todas sus propiedades, incluyendo la contraseña
-        return ResponseEntity.ok(miembrosContraseñaDTOs);
+        // Devolver la lista con código HTTP 200 OK
+        return ResponseEntity.ok(dtos);
     }
 
-
-    // Obtener miembro por ID
+    /**
+     * Obtener un miembro específico por su ID
+     * @param idMiembro ID del miembro a buscar
+     * @return miembro convertido a DTO
+     */
     @GetMapping("/{idMiembro}")
     public ResponseEntity<MiembroDTO> obtenerMiembroPorId(@PathVariable Long idMiembro) {
-        // Buscar el miembro por su ID utilizando el servicio
+        // Obtener miembro desde el servicio por ID
         Miembro miembro = miembroService.obtenerMiembroPorId(idMiembro);
 
-        // Si no lanza excepción, lo convertimos a DTO
+        // Convertir el miembro a DTO para devolverlo
         MiembroDTO dto = new MiembroDTO(miembro);
+
+        // Devolver DTO con código HTTP 200 OK
         return ResponseEntity.ok(dto);
     }
 
-    // Crear un nuevo miembro
+    /**
+     * Crear un nuevo miembro, codificando la contraseña antes de guardar
+     * @param miembro objeto miembro recibido en el body de la solicitud
+     * @return miembro creado convertido a DTO con código HTTP 201 Created
+     */
     @PostMapping
     public ResponseEntity<MiembroDTO> crearMiembro(@Valid @RequestBody Miembro miembro) {
-        //codificamos la contraseña antes de guardar
+        // Codificar la contraseña para seguridad antes de guardar
         miembro.setContraseña(passwordEncoder.encode(miembro.getContraseña()));
+
+        // Guardar nuevo miembro a través del servicio
         Miembro nuevoMiembro = miembroService.crearMiembro(miembro);
-        MiembroDTO miembroDTO = new MiembroDTO(nuevoMiembro); // Convertimos el nuev miembro a DTO
-        return ResponseEntity.status(201).body(miembroDTO); // Retornamos el DTO con el código de estado 201
+
+        // Convertir a DTO para devolverlo sin datos sensibles
+        MiembroDTO dto = new MiembroDTO(nuevoMiembro);
+
+        // Devolver DTO con código HTTP 201 Created
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    // Actualizar un miembro existente
+    /**
+     * Actualizar un miembro existente
+     * @param idMiembro ID del miembro a actualizar
+     * @param miembroDetalles detalles para actualizar recibidos en el body
+     * @return miembro actualizado convertido a DTO
+     */
     @PutMapping("/{idMiembro}")
     public ResponseEntity<MiembroDTO> actualizarMiembro(
             @PathVariable Long idMiembro,
-            @RequestBody Miembro miembroDetalles) {
+            @Valid @RequestBody Miembro miembroDetalles) {
 
+        // Actualizar miembro mediante el servicio
         Miembro miembroActualizado = miembroService.actualizarMiembro(idMiembro, miembroDetalles);
-        MiembroDTO miembroDTOa = new MiembroDTO(miembroActualizado);
-        return ResponseEntity.ok(miembroDTOa);
+
+        // Convertir a DTO para devolverlo
+        MiembroDTO dto = new MiembroDTO(miembroActualizado);
+
+        // Devolver DTO con código HTTP 200 OK
+        return ResponseEntity.ok(dto);
     }
 
-    // Eliminar miembro por ID
+    /**
+     * Eliminar un miembro, solo si el solicitante es administrador de algún proyecto del miembro
+     * @param idMiembro ID del miembro a eliminar
+     * @param userDetails detalles del usuario autenticado (solicitante)
+     * @return respuesta vacía con código 204 No Content o 403 Forbidden si no tiene permisos
+     */
     @DeleteMapping("/{idMiembro}")
-     public ResponseEntity<Void> eliminarMiembro(
+    public ResponseEntity<Void> eliminarMiembro(
             @PathVariable Long idMiembro,
             @AuthenticationPrincipal UserDetails userDetails) {
 
+        // Obtener ID del solicitante por su username
         Long solicitanteId = proyectoService.getMiembroIdByUsername(userDetails.getUsername());
 
-        // 1. Obtener los proyectos del miembro a eliminar
-        Miembro miembroElim = miembroService.obtenerMiembroPorId(idMiembro);
-        Set<MiembroProyecto> relaciones = miembroElim.getProyectosMiembro();
+        // Obtener el miembro que se desea eliminar junto con sus proyectos
+        Miembro miembroAEliminar = miembroService.obtenerMiembroPorId(idMiembro);
+        Set<MiembroProyecto> proyectosMiembro = miembroAEliminar.getProyectosMiembro();
 
-        boolean esAdminEnAlgunProyecto = false;
+        // Verificar si el solicitante es administrador de al menos uno de esos proyectos
+        boolean esAdmin = proyectosMiembro.stream()
+                .anyMatch(mp -> proyectoService.esAdministradorDelProyecto(solicitanteId, mp.getProyecto().getIdProyecto()));
 
-        for (MiembroProyecto mp : relaciones) {
-            if (proyectoService.esAdministradorDelProyecto(solicitanteId, mp.getProyecto().getIdProyecto())) {
-                esAdminEnAlgunProyecto = true;
-                break;
-            }
-        }
-
-        if (!esAdminEnAlgunProyecto) {
+        // Si no es administrador, devolver código 403 Forbidden
+        if (!esAdmin) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
+        // Si tiene permisos, eliminar el miembro
         miembroService.eliminarMiembro(idMiembro);
+
+        // Devolver código 204 No Content para indicar éxito sin contenido en respuesta
         return ResponseEntity.noContent().build();
     }
 }

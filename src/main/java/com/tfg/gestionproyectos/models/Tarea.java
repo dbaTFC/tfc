@@ -8,11 +8,11 @@ import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 
-
 @Entity
 @Table(name = "tareas")
 public class Tarea {
 
+    // Enum para los posibles estados de la tarea
     public enum EstadoTarea {
         PENDIENTE,
         EN_PROGRESO,
@@ -47,20 +47,19 @@ public class Tarea {
     @Column(nullable = false)
     private EstadoTarea estado;
 
+    // Relación con Proyecto (obligatoria)
     @NotNull(message = "La tarea debe estar asociada a un proyecto.")
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
     private Proyecto proyecto;
 
-    // Puede ser null (una tarea puede no estar asignada aún)
+    // Relación con Miembro al que se le asigna la tarea (puede ser null)
     @ManyToOne
     @JoinColumn(name = "id_miembro")
     private Miembro asignadoA;
 
     // Constructores
-    public Tarea() {
-
-    }
+    public Tarea() {}
 
     public Tarea(String titulo, String descripcion, Date fechaInicio, Date fechaFin, EstadoTarea estado, Proyecto proyecto, Miembro asignadoA) {
         this.titulo = titulo;
@@ -72,9 +71,9 @@ public class Tarea {
         this.asignadoA = asignadoA;
     }
 
-    // Getters y Setters
+    // Getters y setters
     public Long getIdTarea() { return idTarea; }
-    public void setIdTarea(Long id) { this.idTarea = id; }
+    public void setIdTarea(Long idTarea) { this.idTarea = idTarea; }
 
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }

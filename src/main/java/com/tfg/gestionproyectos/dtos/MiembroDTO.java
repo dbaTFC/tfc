@@ -16,23 +16,31 @@ public class MiembroDTO {
 
     private Long idMiembro;
 
+    // Validación: nombre de usuario obligatorio y tamaño entre 3 y 50 caracteres
     @NotBlank(message = "El nombre de usuario no puede estar vacío.")
     @Size(min = 3, max = 50, message = "El nombre de usuario debe tener entre 3 y 50 caracteres.")
     private String nombreUsuario;
 
+    // Validación: correo obligatorio y formato email válido
     @NotBlank(message = "El correo es obligatorio.")
     @Email(message = "Debe proporcionar un correo electrónico válido.")
     private String correo;
 
+    // Lista de IDs de tareas asignadas, no puede ser nula
     @NotNull(message = "La lista de tareas asignadas no puede ser nula.")
     private List<Long> tareasAsignadas;
 
+    // Lista de IDs de mensajes enviados, no puede ser nula
     @NotNull(message = "La lista de mensajes enviados no puede ser nula.")
     private List<Long> mensajesEnviados;
 
+    // Lista de proyectos en los que participa el miembro, representados con su DTO
     private List<MiembroProyectoDTO> proyectos = new ArrayList<>();
 
-    // Constructor que recibe una entidad Miembro
+    /**
+     * Constructor que recibe una entidad Miembro
+     * Convierte las relaciones a listas de IDs o DTOs para evitar enviar objetos completos
+     */
     public MiembroDTO(Miembro miembro) {
         this.idMiembro = miembro.getIdMiembro();
         this.nombreUsuario = miembro.getNombreUsuario();
@@ -55,17 +63,17 @@ public class MiembroDTO {
         this.proyectos = new ArrayList<>();
         if (miembro.getProyectosMiembro() != null) {
             for (MiembroProyecto mp : miembro.getProyectosMiembro()) {
-                this.proyectos.add(new MiembroProyectoDTO(mp));
+                this.proyectos.add(new MiembroProyectoDTO(mp)); // Convertimos cada MiembroProyecto a su DTO
             }
         }
     }
 
-    //constructor vacío necesario para Swagger
+    // Constructor vacío necesario para Swagger y frameworks de deserialización
     public MiembroDTO(){
         
     }
 
-    // Getters y Setters
+    // Getters y Setters de todos los campos
     public Long getIdMiembro() { return idMiembro; }
     public void setIdMiembro(Long idMiembro) { this.idMiembro = idMiembro; }
 

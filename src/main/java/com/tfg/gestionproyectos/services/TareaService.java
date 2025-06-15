@@ -12,119 +12,122 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+// Indica que esta clase es un servicio gestionado por Spring
 @Service
 public class TareaService {
 
-    // Inyectamos el repositorio de tareas
+    // Inyección del repositorio de tareas para realizar operaciones CRUD sobre la entidad Tarea
     @Autowired
     private TareaRepository tareaRepository;
 
-    // Inyectamos el repositorio de proyectos
+    // Inyección del repositorio de proyectos para validar o recuperar el proyecto asociado a una tarea
     @Autowired
     private ProyectoRepository proyectoRepository;
 
-    // Inyectamos el repositorio de miembros
+    // Inyección del repositorio de miembros para validar o recuperar el miembro asignado a una tarea
     @Autowired
     private MiembroRepository miembroRepository;
 
-    // Obtener todas las tareas desde la base de datos
+    // Método para obtener todas las tareas almacenadas en la base de datos
     public List<Tarea> obtenerTodasLasTareas() {
-        return tareaRepository.findAll();
+        return tareaRepository.findAll(); // Recupera y devuelve la lista completa de tareas
     }
 
-    // Obtener una tarea por su ID
+    // Método para obtener una tarea específica por su ID
     public Tarea obtenerTareaPorId(Long id) {
-        // Buscar la tarea por ID
+        // Se busca la tarea con el ID especificado
         Optional<Tarea> tareaOptional = tareaRepository.findById(id);
 
-        // Si se encuentra, la devolvemos
+        // Si se encuentra, se devuelve
         if (tareaOptional.isPresent()) {
             return tareaOptional.get();
         } else {
-            // Si no se encuentra, lanzamos una excepción
+            // Si no existe, se lanza una excepción
             throw new RuntimeException("Tarea no encontrada");
         }
     }
 
-    // Crear una nueva tarea
+    // Método para crear una nueva tarea en la base de datos
     public Tarea crearTarea(Tarea tarea) {
-        // --- ASIGNAR EL PROYECTO CORRECTAMENTE ---
+        // ---- ASIGNACIÓN DEL PROYECTO ----
 
-        // Obtener el ID del proyecto que viene en la tarea
+        // Se obtiene el ID del proyecto asociado a la tarea
         Long idProyecto = tarea.getProyecto().getIdProyecto();
 
-        // Buscar el proyecto en la base de datos
+        // Se busca el proyecto en la base de datos para asegurarse de que existe
         Optional<Proyecto> proyectoOptional = proyectoRepository.findById(idProyecto);
 
-        // Si no se encuentra el proyecto, lanzamos una excepción
+        // Si no se encuentra, se lanza una excepción
         if (!proyectoOptional.isPresent()) {
             throw new RuntimeException("Proyecto no encontrado con ID: " + idProyecto);
         }
 
-        // Asignamos el proyecto real a la tarea (el que está en la base de datos)
+        // Se asigna el objeto proyecto completo recuperado desde la base de datos
         tarea.setProyecto(proyectoOptional.get());
 
-        // --- ASIGNAR EL MIEMBRO (SI EXISTE) CORRECTAMENTE ---
+        // ---- ASIGNACIÓN DEL MIEMBRO (si aplica) ----
 
-        // Verificamos si se ha asignado un miembro a la tarea
+        // Si la tarea viene con un miembro asignado
         if (tarea.getAsignadoA() != null) {
-            // Obtenemos el ID del miembro
+            // Se extrae el ID del miembro
             Long idMiembro = tarea.getAsignadoA().getIdMiembro();
 
-            // Buscamos el miembro en la base de datos
+            // Se busca el miembro en la base de datos
             Optional<Miembro> miembroOptional = miembroRepository.findById(idMiembro);
 
-            // Si no se encuentra, lanzamos una excepción
+            // Si no existe, se lanza una excepción
             if (!miembroOptional.isPresent()) {
                 throw new RuntimeException("Miembro no encontrado con ID: " + idMiembro);
             }
 
-            // Asignamos el miembro real a la tarea
+            // Se asigna el miembro real (completo) a la tarea
             tarea.setAsignadoA(miembroOptional.get());
         }
 
-        // Guardamos la tarea en la base de datos
+        // Finalmente, se guarda la tarea en la base de datos
         return tareaRepository.save(tarea);
     }
 
-    // Actualizar una tarea existente
+    // Método para actualizar los datos de una tarea existente
     public Tarea actualizarTarea(Long id, Tarea tareaDetalles) {
-        // Buscar la tarea original por ID
+        // Buscar la tarea actual por su ID
         Optional<Tarea> tareaOptional = tareaRepository.findById(id);
-    
-        // Si no existe, lanzamos una excepción
+
+        // Si no existe, lanzar excepción
         if (!tareaOptional.isPresent()) {
             throw new RuntimeException("Tarea no encontrada");
         }
-    
-        // Obtenemos la tarea existente
+
+        // Obtener la tarea que se va a actualizar
         Tarea tarea = tareaOptional.get();
-    
-        // Actualizamos los detalles de la tarea (nombre, descripción, fechas, estado)
+
+        // Actualizar los campos de la tarea con los nuevos valores
         tarea.setTitulo(tareaDetalles.getTitulo());
         tarea.setDescripcion(tareaDetalles.getDescripcion());
         tarea.setFechaInicio(tareaDetalles.getFechaInicio());
         tarea.setFechaFin(tareaDetalles.getFechaFin());
         tarea.setEstado(tareaDetalles.getEstado());
-    
-        // Buscar el nuevo miembro por su ID (si existe)
-        Optional<Miembro> miembroOptional = miembroRepository.findById(tareaDetalles.getAsignadoA().getIdMiembro());
-    
-        // Si no se encuentra el miembro, lanzamos una excepción
+
+        // Verificar si el miembro asignado existe
+        Optional<Miembro> miembroOptional = miembroRepository.findById(
+            tareaDetalles.getAsignadoA().getIdMiembro()
+        );
+
+        // Si no existe, lanzar excepción
         if (!miembroOptional.isPresent()) {
             throw new RuntimeException("Miembro no encontrado");
         }
-    
+
         // Asignar el nuevo miembro a la tarea
         Miembro nuevoMiembro = miembroOptional.get();
         tarea.setAsignadoA(nuevoMiembro);
-    
-        // Guardamos los cambios en la tarea
+
+        // Guardar la tarea actualizada
         return tareaRepository.save(tarea);
     }
-    
-    // Eliminar una tarea por ID
+
+    // Método para eliminar una tarea por su ID
     public void eliminarTarea(Long id) {
-        tareaRepository.deleteById(id);
+        tareaRepository.deleteById(id); // Se elimina directamente del repositorio
     }
 }

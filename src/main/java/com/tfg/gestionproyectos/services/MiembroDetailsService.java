@@ -29,8 +29,7 @@ public class MiembroDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Usuario no encontrado: " + username);
         }
 
-        // Aquí solo se asigna un rol genérico ROLE_USER para Spring Security.
-        // La lógica fina de administración por proyecto se maneja en ProyectoService.
+        // Se asigna un rol genérico ROLE_USER para todos
         return new User(
             miembro.getNombreUsuario(),
             miembro.getContraseña(),
@@ -39,7 +38,6 @@ public class MiembroDetailsService implements UserDetailsService {
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority("ROLE_USER")); // toddos tienen un rol genérico
-}
-
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
 }

@@ -13,21 +13,27 @@ public class MiembroProyectoDTO {
     private String nombreProyecto; // Opcional: para mostrar en frontend
     private String nombreMiembro; // Opcional: para mostrar en frontend
 
+    // Constructor vacío necesario para frameworks de deserialización y Swagger
     public MiembroProyectoDTO() {}
 
+    /**
+     * Constructor que convierte una entidad MiembroProyecto a su DTO.
+     * Extrae solo los datos necesarios para evitar enviar toda la entidad.
+     * Incluye además nombres para facilitar su uso en el frontend.
+     */
     public MiembroProyectoDTO(MiembroProyecto miembroProyecto) {
         this.id = miembroProyecto.getId();
         this.idMiembro = miembroProyecto.getMiembro().getIdMiembro();
         this.idProyecto = miembroProyecto.getProyecto().getIdProyecto();
         this.rol = miembroProyecto.getRol().name();
-        // this.fechaIncorporacion = miembroProyecto.getFechaIncorporacion();
+        // this.fechaIncorporacion = miembroProyecto.getFechaIncorporacion(); // Está comentado en el original
         
-        // Opcional: incluir nombres para facilitar el frontend
+        // Se incluyen opcionalmente nombres para mostrar en frontend
         this.nombreProyecto = miembroProyecto.getProyecto().getNombre();
         this.nombreMiembro = miembroProyecto.getMiembro().getNombreUsuario();
     }
 
-    // Getters y Setters
+    // Getters y Setters para todos los campos
     public Long getId() {
         return id;
     }

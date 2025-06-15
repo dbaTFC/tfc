@@ -8,9 +8,8 @@ import jakarta.validation.constraints.Size;
 import java.util.Date;
 
 /**
- * DTO (Data Transfer Object) para la entidad EventoCalendario.
- * Este DTO se usa para controlar la salida en las respuestas JSON,
- * evitando ciclos infinitos y controlando qué campos se exponen.
+ * DTO para EventoCalendario.
+ * Facilita la transferencia de datos simplificada entre la capa de presentación y lógica.
  */
 public class EventoCalendarioDTO {
 
@@ -24,12 +23,13 @@ public class EventoCalendarioDTO {
     private Date fecha;
 
     @Size(max = 500, message = "La descripción no puede tener más de 500 caracteres.")
+    @NotBlank(message = "La descripción no puede estar vacía.")
     private String descripcion;
 
     @NotNull(message = "El ID del proyecto asociado no puede ser nulo.")
     private Long idProyecto;
 
-    // Constructor que transforma un objeto EventoCalendario a su DTO
+    // Constructor para mapear entidad a DTO
     public EventoCalendarioDTO(EventoCalendario evento) {
         this.idEvento = evento.getIdEvento();
         this.titulo = evento.getTitulo();
@@ -38,10 +38,8 @@ public class EventoCalendarioDTO {
         this.idProyecto = evento.getProyecto().getIdProyecto();
     }
 
-    //constructor vacío necesario para Swagger
-    public EventoCalendarioDTO(){
-        
-    }
+    // Constructor vacío para frameworks (Jackson, Swagger, etc.)
+    public EventoCalendarioDTO() { }
 
     // Getters y Setters
     public Long getIdEvento() {

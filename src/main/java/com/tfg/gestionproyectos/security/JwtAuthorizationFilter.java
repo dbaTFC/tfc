@@ -17,38 +17,58 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+/**
+ * Filtro personalizado de autorización JWT.
+ * Se ejecuta una vez por solicitud y verifica si el token JWT es válido.
+ */
+@Component // Marca esta clase como un componente gestionado por Spring (detectado automáticamente)
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
-    
-    @Autowired
-    private TokenProvider tokenProvider;
 
     @Autowired
-    private MiembroDetailsService miembroDetailsService;
+    private TokenProvider tokenProvider; // Clase que gestiona operaciones sobre el token JWT (validación, extracción de usuario, etc.)
 
-   @Override
-   protected void doFilterInternal(HttpServletRequest request,
-                                   HttpServletResponse response,
-                                   FilterChain filterChain) throws ServletException, IOException {
-       String header = request.getHeader("Authorization");
+    @Autowired
+    private MiembroDetailsService miembroDetailsService; // Servicio que carga detalles del usuario (implementa UserDetailsService)
 
-       if (header == null || !header.startsWith("Bearer ")) {
-           filterChain.doFilter(request, response);
-           return;
-       }
+    /**
+     * Este método se ejecuta en cada solicitud HTTP.
+     * Comprueba si hay un token JWT válido en la cabecera Authorization y, si lo hay,
+     * establece la autenticación en el contexto de seguridad de Spring.
+     */
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-       String token = header.substring(7);
+        // Extraemos el header "Authorization" de la solicitud
+        String header = request.getHeader("Authorization");
 
-       if (tokenProvider.isTokenValid(token)) {
-           String username = tokenProvider.getUsernameFromToken(token);
-           UserDetails userDetails = miembroDetailsService.loadUserByUsername(username);
-           UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                   userDetails, null, userDetails.getAuthorities());
+        // Si no existe el header o no empieza por "Bearer ", no se procesa ningún token
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response); // Continuamos sin autenticar
+            return;
+        }
 
-           SecurityContextHolder.getContext().setAuthentication(authToken);
-       }
+        // Extraemos el token JWT quitando el prefijo "Bearer "
+        String token = header.substring(7);
 
-       filterChain.doFilter(request, response);
-   }
+        // Validamos el token
+        if (tokenProvider.isTokenValid(token)) {
+            // Si es válido, extraemos el nombre de usuario del token
+            String username = tokenProvider.getUsernameFromToken(token);
+
+            // Cargamos los detalles del usuario desde la base de datos
+            UserDetails userDetails = miembroDetailsService.loadUserByUsername(username);
+
+            // Creamos un objeto de autenticación con los detalles del usuario
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+
+            // Establecemos la autenticación en el contexto de seguridad de Spring
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+        }
+
+        // Continuamos la ejecución del siguiente filtro en la cadena
+        filterChain.doFilter(request, response);
+    }
 }
-

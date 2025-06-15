@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
+    // Repositorio para la entidad Proyecto que extiende JpaRepository
+    // Proporciona métodos CRUD básicos para manejar proyectos
 }

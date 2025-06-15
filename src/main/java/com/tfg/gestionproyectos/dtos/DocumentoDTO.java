@@ -6,9 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
- * DTO (Data Transfer Object) para la entidad Documento.
- * Este objeto simplifica la representación del Documento para evitar problemas
- * de serialización (como bucles infinitos) y exponer solo la información necesaria.
+ * DTO para la entidad Documento.
+ * Se usa para enviar o recibir datos en la capa de presentación (API).
  */
 public class DocumentoDTO {
 
@@ -25,18 +24,16 @@ public class DocumentoDTO {
     @NotNull(message = "El ID del proyecto asociado no puede ser nulo.")
     private Long idProyecto;
 
-    // Constructor que convierte una entidad Documento en su versión DTO
+    // Constructor que mapea la entidad Documento a este DTO
     public DocumentoDTO(Documento documento) {
         this.idDocumento = documento.getIdDocumento();
         this.nombreArchivo = documento.getNombreArchivo();
         this.rutaArchivo = documento.getRutaArchivo();
-        this.idProyecto = documento.getProyecto().getIdProyecto(); // Obtenemos solo el ID
+        this.idProyecto = documento.getProyecto().getIdProyecto();
     }
 
-    //constructor vacío necesario para Swagger
-    public DocumentoDTO(){
-        
-    }
+    // Constructor vacío necesario para frameworks como Jackson, Swagger, etc.
+    public DocumentoDTO() { }
 
     // Getters y Setters
     public Long getIdDocumento() {
